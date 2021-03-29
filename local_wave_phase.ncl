@@ -4,6 +4,9 @@ begin
 
 wave_name = "kelvin"; input variable (kelvin, er, mrg)
 
+date_start = 19961101; input variable (yyyymmdd)
+date_end = 19961215; input variable (yyyymmdd)
+
 f = addfile("waves_jawa.nc", "r")
 
 time = f->time
@@ -75,18 +78,8 @@ end do
 
 print("Plotting...")
 
-if (wave_name.eq."kelvin") then
-	time_start = ind(date.eq.19891101)
-	time_end = ind(date.eq.19891130)
-else if (wave_name.eq."er") then
-	time_start = ind(date.eq.19961101)
-	time_end = ind(date.eq.19961215)
-else if (wave_name.eq."mrg") then
-	time_start = ind(date.eq.19930201)
-	time_end = ind(date.eq.19930228)
-end if
-end if
-end if
+time_start = ind(date.eq.date_start)
+time_end = ind(date.eq.date_end)
 
 n_time = dimsizes(time(time_start:time_end))
 
