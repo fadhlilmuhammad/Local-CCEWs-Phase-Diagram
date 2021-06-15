@@ -1,6 +1,8 @@
 ; Author: Dr. Sandro Lubis (Jan 2020)
 ;         Local equatorial wave phase diagram
-;         Lubis and Respati, 2021 IJOC
+;         Lubis, SW, Respati, MR. Impacts of convectively coupled 
+;         equatorial waves on rainfall extremes in Java, Indonesia. 
+;         Int J Climatol. 2021; 41: 2418– 2440
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 load "wave_phase_background.ncl"
