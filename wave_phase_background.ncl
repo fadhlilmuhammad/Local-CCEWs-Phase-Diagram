@@ -1,3 +1,10 @@
+; Author: Dr. Sandro Lubis (Jan 2020)
+;         Wave phase background
+;         Lubis, SW, Respati, MR. Impacts of convectively coupled 
+;         equatorial waves on rainfall extremes in Java, Indonesia. 
+;         Int J Climatol. 2021; 41: 2418– 2440
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 undef("wave_phase_background")
 function wave_phase_background(wks: graphic, opt[1]: logical)
 begin
