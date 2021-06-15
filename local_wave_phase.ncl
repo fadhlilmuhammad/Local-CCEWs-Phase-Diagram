@@ -1,3 +1,8 @@
+; Author: Dr. Sandro Lubis (Jan 2020)
+;         Local equatorial wave phase diagram
+;         Lubis and Respati, 2021 IJOC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 load "wave_phase_background.ncl"
 
 begin
