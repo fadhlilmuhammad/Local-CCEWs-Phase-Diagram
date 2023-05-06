@@ -9,22 +9,23 @@
 
 load "diag_local_wave_phase.ncl"
 
-waves = (/"kelvin", "er", "mjo", "td", "eig", "wig", "mrg", "td-slow"/)
+waves = (/"kelvin", "er", "mjo", "td", "mrg"/)
 
 
 do i = 0, dimsizes(waves)-1
-	dir   = "dataout/"
+  dir = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/local_wave_phase/"
+	figdir  = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/local_wave_phase/"
 	fname = "waves.northAU.nc"
 
 	opt = True
-	opt@id = "134"
+	opt@id = "133"
 	; outname = "local_wave_phase_"+waves(i)+"_forwksum.nc"
 	date_start  = 20161224
 	date_end    = 20170110
 	seas			  = "SHSummer"
-	central_lon = 134
+	central_lon = 133
 	NC				  = True
-	PLOT			  = False
+	PLOT			  = True
 
-	local_phase_diag(dir,fname, waves(i),date_start,date_end,seas,central_lon,NC,PLOT, opt )
+	local_phase_diag(dir,figdir,fname, waves(i),date_start,date_end,seas,central_lon,NC,PLOT, opt )
 end do

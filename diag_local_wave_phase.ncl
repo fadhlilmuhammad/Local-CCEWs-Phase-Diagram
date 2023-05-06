@@ -6,7 +6,7 @@ load "utils.ncl"
 
 undef("local_phase_diag")
 
-procedure local_phase_diag(dir,fname, wave_name,date_start,date_end,seas,central_lon,NC,PLOT, opt)
+procedure local_phase_diag(dir,figdir,fname, wave_name,date_start,date_end,seas,central_lon,NC,PLOT, opt)
 local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, dateplot, datestring
 
 			begin
@@ -99,8 +99,8 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 				else
 					foutname = "local_"+wave_name+"_phase_"+seas+".nc"
 				end if
-				system ("rm "+"dataout/"+foutname)
-				fout     =  addfile("dataout/"+foutname, "c")
+				system ("rm "+dir+foutname)
+				fout     =  addfile(dir+foutname, "c")
 
 				; phase!0 = "time"
 				r!0   = "time"
@@ -135,7 +135,7 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 
 			n_time = dimsizes(time_seas(time_start:time_end))
 
-			wks = gsn_open_wks("pdf", "local_phase/local_wave_phase_" + wave_name+"_"+seas+"_"+date_start+"-"+date_end)
+			wks = gsn_open_wks("pdf", figdir+"local_wave_phase_" + wave_name+"_"+seas+"_"+date_start+"-"+date_end)
 
 			plot = wave_phase_background(wks, True)
 
@@ -249,7 +249,7 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 			;==============================================
 			; create color plot
 			;=============================================
-			  wks2  = gsn_open_wks ("png", "local_phase/hovlong_"+wave_name+"_"+seas+"_"+date_start+"-"+date_end )           ; send graphics to PNG file
+			  wks2  = gsn_open_wks ("png", figdir+"hovlong_"+wave_name+"_"+seas+"_"+date_start+"-"+date_end )           ; send graphics to PNG file
 
 				; delete(res)
 			  res                      = True               ; plot mods desired
@@ -306,8 +306,9 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 
 			  dateplot = time_seas(time_start:time_end)
 
-			  iLon = ind(x_wave&lon.eq.central_lon)
-			  ; print(iLon)
+			  iLon = central_lon - 130 + 50
+				print(ind(x_wave&lon.eq.130))
+			  print(iLon)
 			  dum  = gsn_add_polyline(wks, plot2,(/x_wave&lon(iLon-1),x_wave&lon(iLon-1)/),(/time_seas(time_start),time_seas(time_end)/), plres)
 
 
