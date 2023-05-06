@@ -1,7 +1,7 @@
 ; Author: Dr. Sandro Lubis (Jan 2020)
 ;         How to filter CCEW signalsa using kf_filter
-;         Lubis, SW, Respati, MR. Impacts of convectively coupled 
-;         equatorial waves on rainfall extremes in Java, Indonesia. 
+;         Lubis, SW, Respati, MR. Impacts of convectively coupled
+;         equatorial waves on rainfall extremes in Java, Indonesia.
 ;         Int J Climatol. 2021; 41: 2418– 2440
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -9,21 +9,28 @@ load "kf_filter.ncl"
 
 begin
 
-wave = "mjo"; input variable (mjo, kelvin, er, mrg, eig, td)
+smooth = True
+folder = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/olr_filtered/"
+wave = "td"; input variable (mjo, kelvin, er, mrg, eig, td)
 
 print("Reading the input file...")
 
-f = addfile("olr.day.mean.nc", "r")
+f = addfile(folder + "olr.day.mean.1980-2019.nc", "r")
 
 date = cd_calendar(f->time, -2)
-date_start = ind(date.eq.19790101)
-date_end = ind(date.eq.20181231)
+date_start = ind(date.eq.19800101)
+date_end = ind(date.eq.20191231)
+
+latN = 25
+latS = -latN
 
 time = f->time(date_start:date_end)
-lat = f->lat({-20:20})
+lat = f->lat({latS:latN})
 lon = f->lon
 
-olr = short2flt(f->olr(time|date_start:date_end, {lat|-20:20}, lon|:))
+
+olr = short2flt(f->olr(time|date_start:date_end, {lat|latS:latN}, lon|:))
 
 print("Calculating climatology and anomaly...")
 
@@ -34,9 +41,15 @@ day = TIME(:, 2)
 ddd = day_of_year(year, month, day)
 yyyyddd = year * 1000 + ddd
 
-climatology = clmDayTLL(olr, yyyyddd)
-anomaly = calcDayAnomTLL(olr, yyyyddd, climatology)
-
+if smooth then
+	nhar = 1 ; ONLY CONSIDER ANNUal cycle
+	climday     = clmDayTLL(olr, yyyyddd)
+	climatology = smthClmDayTLL(climday,nhar)
+	anomaly = calcDayAnomTLL(olr, yyyyddd, climatology)
+else
+	climatology = clmDayTLL(olr, yyyyddd)
+	anomaly = calcDayAnomTLL(olr, yyyyddd, climatology)
+end if
 print("Filtering...")
 
 filtered = new((/dimsizes(time), dimsizes(lat), dimsizes(lon)/), float, -999)
@@ -88,7 +101,7 @@ else if (wave.eq."td") then
 	wavenumber = (/-20, -6/)
 	period = (/2.5, 10/)
 	depth = (/mis, 90/)
-	wave_type = "mrg"
+	wave_type = "td-type"
 	filtered@long_name = "Tropical Depression-Type Waves in Outgoing Longwave Radiation"
 end if
 end if
@@ -107,8 +120,8 @@ printMinMax(filtered, False)
 
 print("Opening the output file...")
 
-system("rm olr." + wave + ".nc")
-g = addfile("olr." + wave + ".nc", "c")
+system("rm "+folderout+"olr." + wave + "."+latN+".nc")
+g = addfile(folderout+"olr." + wave + "."+latN+".nc", "c")
 
 print("Writing the output file...")
 

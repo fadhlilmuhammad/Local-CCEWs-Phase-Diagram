@@ -8,6 +8,8 @@ outfile = "waves.northAU.nc"
 xout = new((/dimsizes(waves),15706, 144/), float, default_fillvalue("float")) ; waves,time,lon
 printVarSummary(xout)
 
+lat
+
 do i = 0, dimsizes(waves)-1
 
   wave = waves(i)
@@ -20,7 +22,7 @@ do i = 0, dimsizes(waves)-1
     latS = -20.
   end if
 
-  f = addfile(outdir+"olr."+wave+".20NS.nc", "r")
+  f = addfile(outdir+"olr."+wave+".20.nc", "r")
 
   x = f->$wave$(:,{latS:latN},:)
 
