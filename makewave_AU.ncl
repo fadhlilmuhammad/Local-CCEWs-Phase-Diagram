@@ -1,28 +1,30 @@
 
 begin
 
-waves = (/"kelvin", "er", "mjo", "mrg", "eig", "wig","td", "td-slow"/)
-outdir  = "dataout/"
+waves = (/"kelvin", "er", "mjo", "mrg", "td"/)
+outdir = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
+
 outfile = "waves.northAU.nc"
 
-xout = new((/dimsizes(waves),15706, 144/), float, default_fillvalue("float")) ; waves,time,lon
+xout = new((/dimsizes(waves),14610, 144/), float, default_fillvalue("float")) ; waves,time,lon
 printVarSummary(xout)
 
-lat
+latref = 25.
+latS = -latref
 
 do i = 0, dimsizes(waves)-1
 
   wave = waves(i)
 
   if wave.eq."kelvin" then
-    latN = 15.0
+    latN = 15.
     latS = -15.
   else
     latN = -10.0
-    latS = -20.
+    latS = -latref
   end if
 
-  f = addfile(outdir+"olr."+wave+".20.nc", "r")
+  f = addfile(outdir+"olr_filtered/olr."+wave+"."+latref+".nc", "r")
 
   x = f->$wave$(:,{latS:latN},:)
 
@@ -45,8 +47,8 @@ do i = 0, dimsizes(waves)-1
 
 end do
 
-system("rm "+outdir+outfile)
-fout = addfile(outdir+outfile, "c")
+system("rm "+outdir+"/local_wave_phase/"+outfile)
+fout = addfile(outdir+"/local_wave_phase/"+outfile, "c")
 
 
 do i = 0, dimsizes(waves)-1
