@@ -14,24 +14,27 @@ begin
    NC      = True                            ; create netCDF?
    PLOT    = False                             ; sample plots?
 
-   ymdStrt = 19790101                         ; start yyyymmdd
-   ymdLast = 20211231                         ; last
+   ymdStrt = 19800101                         ; start yyyymmdd
+   ymdLast = 20191231                         ; last
    yrStrt  = ymdStrt/10000
    yrLast  = ymdLast/10000
 
-   nhar    = 4                                ; number of fourier comp
+   nhar    = 1                                ; number of fourier comp
 
-   var     = "v"                            ; name of file
-   vName   = "v"                            ; name for plots
+   var     = "olr"                            ; name of file
+   vName   = "olr"                            ; name for plots
 
   ;diri    = "/project/cas/shea/CDC/"         ; input directory
   ;diri    = "/Users/shea/Data/AMWG/"         ; input directory
-   diri    = "data/era5/"                             ; new input directory
-   ; fili    = var+".day.mean.nc"               ; input file
-   fili    = var+"850.daily.1979-2021.regrid.nc"               ; input file
+   ; diri    = "data/era5/"                             ; new input directory
+   fili    = var+".day.mean.nc"               ; input file
+
+   diri    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+   ; fili    = var+"850.daily.1979-2021.regrid.nc"       x        ; input file
 
    if (NC) then
-       diro= "data/era5/"         ; output dir
+       ; diro= "data/era5/"         ; output dir
+       diro = diri
       ;filo= var+".day.anomalies.nc"          ; output file
        filo= var+".day.anomalies."+yrStrt+"-"+yrLast+".nc"  ; output file
    end if
