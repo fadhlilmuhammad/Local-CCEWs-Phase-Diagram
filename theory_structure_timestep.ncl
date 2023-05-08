@@ -1,5 +1,7 @@
 
-wave = "MRG"
+wave ="WIG"
+
+folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 
 dtim = 16
 G   = new((/dtim, 31,31/), "float")
@@ -122,8 +124,8 @@ end if
 printMinMax(G,0)
 
 
-system("rm "+wave+"_structure_tstep.nc")
-fout = addfile(wave+"_structure_tstep.nc", "c")
+system("rm "+folderout+"theory/"+wave+"_structure_tstep.nc")
+fout = addfile(folderout+"theory/"+wave+"_structure_tstep.nc", "c")
 fout->$wave$ = G
 
 do t = 0, dtim-1

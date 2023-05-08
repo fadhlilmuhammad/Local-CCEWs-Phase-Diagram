@@ -1,9 +1,11 @@
 
-fk = addfile("KELVIN_structure_tstep.nc", "r")
-fm = addfile("MRG_structure_tstep.nc", "r")
-fe = addfile("ER_structure_tstep.nc", "r")
-fi = addfile("EIG_structure_tstep.nc", "r")
-fw = addfile("WIG_structure_tstep.nc", "r")
+folderin  = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/theory/"
+
+fk = addfile(folderin+"KELVIN_structure_tstep.nc", "r")
+fm = addfile(folderin+"MRG_structure_tstep.nc", "r")
+fe = addfile(folderin+"ER_structure_tstep.nc", "r")
+fi = addfile(folderin+"EIG_structure_tstep.nc", "r")
+fw = addfile(folderin+"WIG_structure_tstep.nc", "r")
 
 klv  = fk->KELVIN
 mrg  = fm->MRG
@@ -11,13 +13,15 @@ erw  = fe->ER
 eig  = fi->EIG
 wig  = fw->WIG
 
+folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/theory/"
+
 ; ===========================
 ; create plot
 ; ===========================
 
 dtim = 16
 do t = 0, dtim-1
- wks   = gsn_open_wks ("png", "wave_structure_panel_"+t)        ; send graphics to PNG file
+ wks   = gsn_open_wks ("png", folderout+"wave_structure_panel_"+t)        ; send graphics to PNG file
  plot  = new(5,graphic)
 
  res                 = True                    ; plot mods desired
