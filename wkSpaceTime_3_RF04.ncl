@@ -10,8 +10,9 @@
 ; This file still has to be loaded manually
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/diagnostics_cam.ncl"
 
-  pwdir = "/Users/fadhlilrizki/Documents/GitHub/Local-CCEWs-Phase-Diagram/data/"
-  diro     = "./"        ; output dir: location of plots
+  ; pwdir = "/Users/fadhlilrizki/Documents/GitHub/Local-CCEWs-Phase-Diagram/data/"
+  pwdir   = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+  diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"        ; output dir: location of plots
 
   latN     = 25
   latS     = -latN       ; symmetric about the equator
@@ -36,15 +37,15 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/diagnostics_cam.ncl"
 
 ; diri     = "/project/cas/shea/WHEELER/"
   diri     = pwdir    ; new input directory
-  fili     = "olr.day.mean.nc"
+  fili     = "olr.day.anomalies.1980-2019.nc"
 
 
 
   f        = addfile (diri+fili, "r")
 
   date = cd_calendar(f->time, -2)
-  date_start = ind(date.eq.19790101)
-  date_end = ind(date.eq.20211231)
+  date_start = ind(date.eq.19810101)
+  date_end = ind(date.eq.20181231)
 
   olr    = short2flt(f->$var$(date_start:date_end,{latS:latN},:) )    ; (time,lat,lon)
 

@@ -968,6 +968,60 @@ local latN, latS, lonL, lonR, spd, fCrit, tim_taper        \
    gsn_polyline(wks,plot,Apzwn(0,1,:),Afreq(0,1,:),dcres)
    gsn_polyline(wks,plot,Apzwn(0,2,:),Afreq(0,2,:),dcres)
 
+   tdres = dcres
+   tdres@gsLineColor = "red"
+
+   ftd1 = 1/2.5
+   ftd2 = 1/5.
+   gsn_polyline(wks,plot,(/-15,-15/), (/ftd2,ftd1/),tdres)
+   gsn_polyline(wks,plot,(/-6,-6/), (/ftd2,ftd1/),tdres)
+   gsn_polyline(wks,plot,(/-15,-6/), (/ftd1,ftd1/),tdres)
+   gsn_polyline(wks,plot,(/-15,-6/), (/ftd2,ftd2/),tdres)
+
+   ; fmjo1 = 1/20.
+   ; fmjo2 = 1/100.
+   ; gsn_polyline(wks,plot,(/1,1/), (/fmjo2,fmjo1/),tdres)
+   ; gsn_polyline(wks,plot,(/5,5/), (/fmjo2,fmjo1/),tdres)
+   ; gsn_polyline(wks,plot,(/1,5/), (/fmjo1,fmjo1/),tdres)
+   ; gsn_polyline(wks,plot,(/1,5/), (/fmjo2,fmjo2/),tdres)
+   ;
+   ; fmrg1 = 1/3.
+   ; fmrg2 = 1/10.
+   ; kmrg1 = -1
+   ; kmrg2 = -10
+   ; gsn_polyline(wks,plot,(/kmrg1,kmrg1/), (/fmrg2,fmrg1/),tdres)
+   ; gsn_polyline(wks,plot,(/kmrg2,kmrg2/), (/fmrg2,fmrg1/),tdres)
+   ; gsn_polyline(wks,plot,(/kmrg1,kmrg2/), (/fmrg1,fmrg1/),tdres)
+   ; gsn_polyline(wks,plot,(/kmrg1,kmrg2/), (/fmrg2,fmrg2/),tdres)
+   ;
+   ;
+   ; ferw1 = 1/9.
+   ; ferw2 = 1/72.
+   ; kerw1 = -1
+   ; kerw2 = -10
+   ; gsn_polyline(wks,plot,(/kerw1,kerw1/), (/ferw2,ferw1/),tdres)
+   ; gsn_polyline(wks,plot,(/kerw2,kerw2/), (/ferw2,ferw1/),tdres)
+   ; gsn_polyline(wks,plot,(/kerw1,kerw2/), (/ferw1,ferw1/),tdres)
+   ; gsn_polyline(wks,plot,(/kerw1,kerw2/), (/ferw2,ferw2/),tdres)
+   ;
+   ;
+   ; fklv1 = 1/3.
+   ; fklv2 = 1/10.
+   ; kklv1 = 1
+   ; kklv2 = 14
+   ; gsn_polyline(wks,plot,(/kklv1,kklv1/), (/fklv2,fklv1/),tdres)
+   ; gsn_polyline(wks,plot,(/kklv2,kklv2/), (/fklv2,fklv1/),tdres)
+   ; gsn_polyline(wks,plot,(/kklv1,kklv2/), (/fklv1,fklv1/),tdres)
+   ; gsn_polyline(wks,plot,(/kklv1,kklv2/), (/fklv2,fklv2/),tdres)
+
+
+
+   fer1 = 1/7.
+   fer2 = 1/10.
+   res_poly = True
+   res_poly@gsFillColor = "black"
+   gsn_polygon(wks,plot,(/12,15,15,12,12/),(/fer1,fer1,fer2,fer2,fer1/),res_poly)
+
    ; gsn_polyline(wks,plot,)
    ; gsn_polyline(wks,plot,Apzwn(1,0,:),Afreq(1,0,:),dcres)
    ; gsn_polyline(wks,plot,Apzwn(1,1,:),Afreq(1,1,:),dcres)

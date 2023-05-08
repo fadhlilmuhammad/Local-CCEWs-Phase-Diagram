@@ -15,11 +15,11 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/diagnostics_cam.ncl"
 load "wkSpaceTime_mod.ncl"
 
-  seas = "SHSpring"
-  pwdir = "/Users/fadhlilrizki/Documents/PhD/GitHub/Local-CCEWs-Phase-Diagram/data/"
-  diro     = "figures/STSA/"        ; output dir: location of plots
+  seas = "SHSummer"
+  pwdir   = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+  diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"        ; output dir: location of plots
 
-  latN     = 20
+  latN     = 25
   latS     = -latN       ; symmetric about the equator
 
   nDayWin  = 96      ; Wheeler-Kiladis [WK] temporal window length (days)
@@ -37,12 +37,12 @@ load "wkSpaceTime_mod.ncl"
   ; opt@Fig_3b      = (/1.0,1.5,2,3,4,5,6,7,8,9,10,11,13,15,17/)  ; unequal
 
   spd      = 1       ; samples per day (6 hour sampling rate)
-  var      = "OLR_anom_sm"  ; user specified
+  var      = "olr_anom_sm"  ; user specified
   ; var      = "kelvin"
 
 ; diri     = "/project/cas/shea/WHEELER/"
   diri     = pwdir    ; new input directory
-  fili     = diri+"olr.day.anomalies.1979-2021.nc"
+  fili     = diri+"olr.day.anomalies.1980-2019.nc"
   ; fili     =  "dataout/olr.kelvin.nc"
   case     = "OLR-"+seas+" "+latN+"N-"+latN+"S"+"_"+var
 
@@ -117,6 +117,9 @@ load "wkSpaceTime_mod.ncl"
 
   opt@pltColorMap = "WhBlGrYeRe"
   opt@pltTitle   = "OLR: "+seas+" "+latN+"N-"+latN+"S"
+  opt@netCDF = True
+  opt@dirNetCDF = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/STSA/"
+  opt@filNetCDF = "SpaceTime."+seas+"."+latN+".nc"
   wkSpaceTime_Seas (olr, spec,  diro, case, var             \
               ,latN, spd, nDayWin, nDaySkip, opt  )
 

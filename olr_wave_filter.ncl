@@ -99,7 +99,8 @@ else if (wave.eq."eig") then
 	filtered@long_name = "Eastward Inertio Gravity Waves in Outgoing Longwave Radiation"
 else if (wave.eq."td") then
 	wavenumber = (/-20, -6/)
-	period = (/2.5, 10/)
+	; period = (/2.5, 10/)
+	period = (/2.5, 5/)
 	depth = (/mis, 90/)
 	wave_type = "td-type"
 	filtered@long_name = "Tropical Depression-Type Waves in Outgoing Longwave Radiation"
