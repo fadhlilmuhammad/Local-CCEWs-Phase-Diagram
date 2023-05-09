@@ -53,7 +53,7 @@ fillVal    = 1e20           ; miscellaneous
 rlat           = 0.0
 Ahe            = (/50.,25.,12./)
 nWaveType      = 6
-nPlanetaryWave = 50
+nPlanetaryWave = 100
 nEquivDepth    = dimsizes(Ahe)
 Apzwn          = new((/nWaveType,nEquivDepth,nPlanetaryWave/),"double",fillVal)
 Afreq          = Apzwn
@@ -92,22 +92,13 @@ res@lbOrientation     = "vertical"
 res@cnFillOn          = True
 res@cnLinesOn     = False
 
-minfrq = 0.0
+minfrq = 0.02
 maxfrq = 0.5
 
 res@tmYLMode          = "Explicit"
 res@tmYLValues        = fspan(minfrq,maxfrq,9)
 res@tmYLLabels        = fspan(minfrq,maxfrq,9)
 res@tmYLMinorValues   = fspan(minfrq,maxfrq,17)
-
-res2 = True
-res2@tmYROn = True
-res2@tmYRLabelsOn      = True
-res2@tmYRMode          = "Explicit"
-res2@tmYRValues        = fspan(1/(minfrq+0.0001),1/maxfrq,9)
-res2@tmYRLabels        = fspan(1/(minfrq+0.0001),1/maxfrq,9)
-res2@tmYRMinorValues   = fspan(1/(minfrq+0.0001),1/maxfrq,17)
-
 
 res@tmYLLabelFontHeightF = 0.015
 res@tmXBLabelFontHeightF = 0.015
@@ -119,15 +110,31 @@ res@tiYAxisString     = "Frequency (cpd)"
 res@tiYAxisFontHeightF= 0.015
 
 
-res@tiYAxisString     = "Frequency (cpd)"
-res@tiYAxisFontHeightF= 0.015
+; res@tiYAxisString     = "Period (days)"
+; res@tiYAxisFontHeightF= 0.015
 
+
+period  = decimalPlaces(fspan(1/(minfrq+0.01),1/maxfrq,9),1,True)
+period2 = fspan(1/(minfrq+0.01),1/maxfrq,17)
+
+print(period)
+; res@tmYLValues        = period
+; res@tmYLLabels        = period
 
 pltType = "png"
 wks  = gsn_open_wks(pltType,wkdir+"/Fig3.symAsym."+lat)
 gsn_define_colormap(wks,pltColorMap)
 res@gsnCenterString = "OLR: "+SEAS+" "+lat+"N-"+lat+"S"
 plot = gsn_csm_contour(wks,symasym,res)
+
+
+res@tmYUseLeft  =  False                 ; disassociate  YR tick marks with YL tick marks
+; res@tmYROn = True
+; res@tmYRLabelsOn      = True
+res@tmYRMode          = "Explicit"
+
+; res@tmYRMinorValues   = period2
+; draw(plot)
 
 addHorVertLines(wks, plot, x1,x2,y1,y2,y3,y4 ) ; add dashed lines
 
@@ -156,12 +163,74 @@ gsn_polyline(wks,plot,(/-6,-6/), (/ftd2,ftd1/),tdres)
 gsn_polyline(wks,plot,(/-15,-6/), (/ftd1,ftd1/),tdres)
 gsn_polyline(wks,plot,(/-15,-6/), (/ftd2,ftd2/),tdres)
 
-; fmjo1 = 1/20.
-; fmjo2 = 1/100.
-; gsn_polyline(wks,plot,(/1,1/), (/fmjo2,fmjo1/),tdres)
-; gsn_polyline(wks,plot,(/5,5/), (/fmjo2,fmjo1/),tdres)
-; gsn_polyline(wks,plot,(/1,5/), (/fmjo1,fmjo1/),tdres)
-; gsn_polyline(wks,plot,(/1,5/), (/fmjo2,fmjo2/),tdres)
+
+tdres@gsLineColor = "darkgreen"
+tdres@gsLineThicknessF = 5.0
+;ER
+; gsn_polyline(wks,plot,Apzwn(3,0,:),Afreq(3,0,:),tdres)
+; gsn_polyline(wks,plot,Apzwn(3,2,:),Afreq(3,2,:),tdres)
+
+
+kend    = ind(Apzwn(3,0,:).le.-1.and.Apzwn(3,0,:).gt.-1.1)
+; print(Apzwn(0,0,:))
+print(kend)
+gsn_polyline(wks,plot,Apzwn(3,0,kend:99),Afreq(3,0,kend:99),tdres)
+
+; freqend = ind(Afreq(0,2,:).ge.1/3.and. Afreq(0,2,:).lt.1./3.5)
+
+print(freqend)
+print(Afreq(0,2,25))
+gsn_polyline(wks,plot,Apzwn(3,2,kend:99),Afreq(3,2,kend:99),tdres)
+gsn_polyline(wks,plot,(/-1,-1/),(/Afreq(3,0,kend),Afreq(3,2,kend)/),tdres)
+
+
+
+;KELVIN
+
+tdres@gsLineColor = "violetred4"
+print(Afreq(4,0,:))
+; freqend = ind(Afreq(0,0,:).le.1/18.2.and. Afreq(0,0,:).gt.1./17)
+
+freqend = ind(Afreq(4,0,:).le.1/9..and. Afreq(4,0,:).gt.1./10)
+print(freqend)
+kend    = ind(Apzwn(4,0,:).ge.14.and.Apzwn(4,0,:).lt.14.5)
+
+gsn_polyline(wks,plot,Apzwn(4,0,kend:freqend),Afreq(4,0,kend:freqend),tdres)
+gsn_polyline(wks,plot,Apzwn(4,2,kend:freqend),Afreq(4,2,kend:freqend),tdres)
+gsn_polyline(wks,plot,(/Apzwn(0,0,kend),Apzwn(0,0,kend)/),(/Afreq(4,0,kend),Afreq(4,2,kend)/),tdres)
+gsn_polyline(wks,plot,(/Apzwn(0,0,freqend),Apzwn(0,0,freqend)/),(/Afreq(4,0,freqend),Afreq(4,2,freqend)/),tdres)
+
+; ; gsn_polyline(wks,plot,Apzwn(5,0,:),Afreq(5,0,:),tdres)
+; ; gsn_polyline(wks,plot,Apzwn(5,1,:),Afreq(5,1,:),tdres)
+; ; gsn_polyline(wks,plot,Apzwn(5,2,:),Afreq(5,2,:),tdres)
+
+;MRG=
+; print(Afreq(0,0,:))
+; print(Apzwn(0,0,:))
+
+tdres@gsLineColor = "purple"
+freqend = ind(Afreq(0,0,:).ge.1/10.1.and. Afreq(0,0,:).lt.1./10)
+kend    = ind(Apzwn(0,0,:).le.-1.and.Apzwn(0,0,:).gt.-1.1)
+; print(Apzwn(0,0,:))
+print(kend)
+gsn_polyline(wks,plot,Apzwn(0,0,kend:99),Afreq(0,0,kend:99),tdres)
+
+; freqend = ind(Afreq(0,2,:).ge.1/3.and. Afreq(0,2,:).lt.1./3.5)
+
+print(freqend)
+print(Afreq(0,2,25))
+gsn_polyline(wks,plot,Apzwn(0,2,kend:99),Afreq(0,2,kend:99),tdres)
+gsn_polyline(wks,plot,(/-1,-1/),(/Afreq(0,0,kend),Afreq(0,2,kend)/),tdres)
+
+;MJO
+tdres@gsLineColor = "saddlebrown"
+
+fmjo1 = 1/20.
+fmjo2 = 1/100.
+gsn_polyline(wks,plot,(/1,1/), (/fmjo2,fmjo1/),tdres)
+gsn_polyline(wks,plot,(/5,5/), (/fmjo2,fmjo1/),tdres)
+gsn_polyline(wks,plot,(/1,5/), (/fmjo1,fmjo1/),tdres)
+gsn_polyline(wks,plot,(/1,5/), (/fmjo2,fmjo2/),tdres)
 ;
 ; fmrg1 = 1/3.
 ; fmrg2 = 1/10.
@@ -225,6 +294,6 @@ gsn_text(wks,plot,"n=1 ER",-10.7,.07,txres)
 ; gsn_text(wks,plot,"h=25",-14.0,.60,txres)
 ; gsn_text(wks,plot,"h=12",-14.0,.46,txres)
 gsn_text(wks,plot,"TD-type",-10.0,.3,txres)
-gsn_text(wks,plot,"MJO",4.0,.03,txres)
+gsn_text(wks,plot,"MJO",6.0,.03,txres)
 
 frame(wks)
