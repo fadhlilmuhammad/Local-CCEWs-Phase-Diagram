@@ -18,7 +18,7 @@ copy_VarCoords(coord,x)
 copy_VarAtts(coord,x)
 
 
-nseas = 4
+nseas = 2
 ndim  = dimsizes(coord)
 printVarSummary(ndim)
 
@@ -308,6 +308,8 @@ end do
   resP@gsnPanelLabelBar = True                   ; add common colorbar
   resP@gsnPanelMainString = ""     ; set main title
   resP@gsnPanelBottom   = 0.05                   ; add space at bottom
+  resP@cnLabelBarEndLabelsOn  = True
+  resP@lbOrientation   = "vertical"
 
   if nseas.eq.4 then
   resP@amJust   = "TopLeft"

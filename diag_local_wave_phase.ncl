@@ -26,11 +26,17 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 
 			print("Standardizing...")
 
-			wave_std = wave / stddev(wave(iseason,:))
+			if isatt(opt,"stdev_all") then
+				wave_std = wave / stddev(wave)
+				d_wave_std = d_wave / stddev(d_wave)
+			else
+				wave_std = wave / stddev(wave(iseason,:))
+				d_wave_std = d_wave / stddev(d_wave(iseason,:))
+			end if
+
 			copy_VarCoords(wave, wave_std)
 			; printVarSummary(wave_std(:,{central_lon}))
 
-			d_wave_std = d_wave / stddev(d_wave(iseason,:))
 			copy_VarCoords(d_wave, d_wave_std)
 
 			print("Tracking phases...")
