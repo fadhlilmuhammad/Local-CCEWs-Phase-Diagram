@@ -25,6 +25,37 @@
 ;    Fourier and TimeCross Spectral Analysis
 ;    J. Meteor. Soc. Japan, 1971, 49: 125-128.
 ;==================================================================
+
+
+undef("addHorVertLines_panel")
+function addHorVertLines_panel(wks[1]:graphic, plot[1]:graphic \
+                         ,x1[*],x2[*],y1[*],y2[*],y3[*],y4[*] )
+; freq [y] axis: Add horizontal lines that explicitly
+; print time in days. This assumes the units
+; of the freq axis are "cpd" [cycles per day]
+local gsres, txres
+begin
+    dom = new(7, graphic)
+    gsres = True
+    gsres@gsLineDashPattern = 1
+
+    dom(0) = gsn_add_polyline(wks, plot, x1,y1,gsres)
+    dom(1) = gsn_add_polyline(wks, plot, x1,y2,gsres)
+    dom(2) = gsn_add_polyline(wks, plot, x1,y3,gsres)
+    dom(3) = gsn_add_polyline(wks, plot, x2,y4,gsres)
+
+    txres = True
+    txres@txJust = "CenterLeft"
+    txres@txFontHeightF = 0.013
+
+    dom(4) = gsn_add_text(wks, plot, "3 days" ,-14.7,.345,txres)
+    dom(5) = gsn_add_text(wks, plot, "6 days" ,-14.7,.175,txres)
+    dom(6) = gsn_add_text(wks, plot, "30 days",-14.7,.045,txres)
+
+    return (dom)
+end
+
+
 undef ("wkSpaceTime_Seas")
 procedure wkSpaceTime_Seas (x[*][*][*]:numeric                  \
                       ,xback                               \

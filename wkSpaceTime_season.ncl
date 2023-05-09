@@ -15,7 +15,7 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/diagnostics_cam.ncl"
 load "wkSpaceTime_mod.ncl"
 
-  seas = "SHWinter"
+  seas = "NDJFMA"
   pwdir   = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
   diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"        ; output dir: location of plots
 
