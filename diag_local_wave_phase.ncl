@@ -141,7 +141,7 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 
 			n_time = dimsizes(time_seas(time_start:time_end))
 
-			wks = gsn_open_wks("pdf", figdir+"local_wave_phase_" + wave_name+"_"+seas+"_"+date_start+"-"+date_end)
+			wks = gsn_open_wks("pdf", figdir+"local_wave_phase_" + wave_name+"_"+seas+"_"+date_start+"-"+date_end+"_"+central_lon)
 
 			plot = wave_phase_background(wks, True)
 
@@ -255,7 +255,7 @@ local time, ymdhms, date, time_seas, x, y, wave_std, d_wave_std, wave, iseason, 
 			;==============================================
 			; create color plot
 			;=============================================
-			  wks2  = gsn_open_wks ("png", figdir+"hovlong_"+wave_name+"_"+seas+"_"+date_start+"-"+date_end )           ; send graphics to PNG file
+			  wks2  = gsn_open_wks ("png", figdir+"hovlong_"+wave_name+"_"+seas+"_"+date_start+"-"+date_end+"_"+central_lon )           ; send graphics to PNG file
 
 				; delete(res)
 			  res                      = True               ; plot mods desired
@@ -354,6 +354,28 @@ begin
 
 	return(ind_active)
 end
+
+undef ("lookup_phase_index_rmvtc")
+function lookup_phase_index_rmvtc(phase_data, amp,data_date ,nphase,ftc)
+local ind_temp, date_ind
+begin
+
+	ind_temp 			 = ind(phase_data.eq.nphase)
+	temp           = amp(ind_temp)
+
+	date_ind = cd_calendar(temp&time,-2)
+	; printVarSummary(date_ind)
+	ind_active = new((/dimsizes(ind_temp)/),"integer")
+
+	do j = 0, dimsizes(date_ind)-1
+		do k=0, dimsizes(ftc)-1
+			ind_active(j)     = ind(data_date.eq.date_ind(j) .and. data_date.ne.ftc(k))
+		end do
+	end do
+
+	return(ind_active)
+end
+
 
 undef("group_waves")
 function group_waves(x,phase, amp, season,phasechoose)

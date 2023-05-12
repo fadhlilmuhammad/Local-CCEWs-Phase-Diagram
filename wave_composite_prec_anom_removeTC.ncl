@@ -1,24 +1,24 @@
 load "diag_local_wave_phase.ncl"
 
-diro     = "dataout/"
-diri     = "data/precip/"
+diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
+diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 
 waves = (/"er", "kelvin", "mrg", "td","mjo","td-slow"/)
 do k = 0, dimsizes(waves)-1
 
 wave     = waves(k)
-foutname =  "agcd_v1_precip_calib_r005_1980-2019.regrid.nc"
+foutname =  "agcd_v1_precip_calib_r005_daily_1981-2020.regrid.nc"
 
-ref = 130
-seas = "SHAutumn"
+ref = 133
+seas = "SHSummer"
 ystrt    = 1981
 ylast    = 2018
 
 f        = addfile(diri+foutname, "r")
-g        = addfile(diro+"local_"+wave+"_phase_"+seas+"."+ref+".nc", "r")
+g        = addfile(diro+"local_wave_phase/"+"local_"+wave+"_phase_"+seas+"."+ref+".nc", "r")
 
-ftc      = asciiread("TC_dates.csv", -1, "integer")
+ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
 
 amp_in   = g->amp
 phase_in = g->phase
@@ -39,7 +39,7 @@ delete(time)
 
 phase = phase_in(istrt(0):ilast(dimsizes(ilast)-1))
 
-printVarSummary(f)
+; printVarSummary(f)
 var = "precip"
 x_in        = f->$var$
 nlat = dimsizes(x_in&lat)
@@ -146,7 +146,7 @@ delete(x)
 printVarSummary(comp)
 
 foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+".nc"
-system("rm "+diro+foutname)
+system("rm "+diro+"precip/"+foutname)
 
 fout = addfile(diro+foutname,"c")
 fout->composite = comp

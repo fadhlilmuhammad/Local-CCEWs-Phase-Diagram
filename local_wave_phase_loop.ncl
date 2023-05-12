@@ -18,13 +18,13 @@ do i = 0, dimsizes(waves)-1
 	fname = "waves.northAU.nc"
 
 	opt = True
-	opt@id = "133"
+	opt@id = "131"
 	opt@stdev_all = True
 	; outname = "local_wave_phase_"+waves(i)+"_forwksum.nc"
-	date_start  = 20160424
-	date_end    = 20160510
-	seas			  = "SHSpring"
-	central_lon = 133
+	date_start  = 20161224
+	date_end    = 20170110
+	seas			  = "SHSummer"
+	central_lon = 131
 	NC				  = True
 	PLOT			  = True
 
