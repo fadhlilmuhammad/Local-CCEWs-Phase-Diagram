@@ -373,7 +373,11 @@ begin
 		end do
 	end do
 
-	return(ind_active)
+	igood = ind(.not.ismissing(ind_active))
+	xgood = ind_active(igood)
+	; print(xgood)
+
+	return(xgood)
 end
 
 

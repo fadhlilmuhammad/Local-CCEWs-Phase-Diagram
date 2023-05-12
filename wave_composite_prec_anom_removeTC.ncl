@@ -10,7 +10,7 @@ do k = 0, dimsizes(waves)-1
 wave     = waves(k)
 foutname =  "agcd_v1_precip_calib_r005_daily_1981-2020.regrid.nc"
 
-ref = 133
+ref = 145
 seas = "SHSummer"
 ystrt    = 1981
 ylast    = 2018
@@ -94,6 +94,7 @@ do i = 0, 7
   indactive         = lookup_phase_index_rmvtc(phase,amp, date_phase, nphase,ftc )
   printVarSummary(indactive)
   ; print(indactive)
+  ; print(indactive)
   ; print(num(indactive))
   ; comp@ndays(i+1)   = num(indactive)
   xphase            = x(indactive,:,:)
@@ -110,9 +111,9 @@ do i = 0, 7
   xBoot      = BootStrap[0]
 
   siglow      = (100. - sigval)/200.
-  print(siglow)
+  ; print(siglow)
   sighi       = (1. - siglow)
-  print(sighi)
+  ; print(sighi)
 
   xBootLow   = bootstrap_estimate(xBoot, siglow, False)   ;  2.5% lower confidence bound
   xBootHi    = bootstrap_estimate(xBoot, sighi, False)   ; 97.5% upper confidence bound
