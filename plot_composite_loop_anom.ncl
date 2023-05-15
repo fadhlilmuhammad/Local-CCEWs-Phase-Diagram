@@ -1,6 +1,7 @@
 
 ; load('$NCARG_ROOT/lib/ncarg/database/rangs')
-diri = "dataout/"
+diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/precip/"
+diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/precip/"
 
 waves  = (/"er", "kelvin", "mrg", "td","mjo","td-slow"/)
 ; thresh = 1
@@ -14,7 +15,7 @@ do k =0, dimsizes(waves)-1
 
 wave = waves(k)
 seas = "SHAutumn"
-ref = 130
+ref = 133
 ; fname = wave+"_wave_composite_"+seas+"_thresh50_25km_sig90.nc"
 fname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+".nc"
 ; fname = "olr_er_wave_composite.nc"
@@ -30,7 +31,7 @@ n      = 8
 ;************************************************
 ; create plots
 ;************************************************
-  wks = gsn_open_wks("png","figures/rainfall/rain_anom_comp_"+wave+"_"+seas+"ref"+ref)              ; send graphics to PNG file
+  wks = gsn_open_wks("png",diro+"rain_anom_comp_"+wave+"_"+seas+"ref"+ref)              ; send graphics to PNG file
 
   cmap  = read_colormap_file("precip4_diff_19lev")
   cmap(9:10,:) = 0

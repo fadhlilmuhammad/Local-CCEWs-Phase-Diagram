@@ -29,9 +29,9 @@ var = "precip"
 ystrt    = 1981
 ylast    = 2018
 
-ref = 130
+ref = 145
 wave     = waves(k)
-season   = "SHAutumn"
+season   = "NDJFMA"
 f        = addfile(diri+foutname, "r")
 g        = addfile(diro+"local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
 

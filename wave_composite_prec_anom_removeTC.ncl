@@ -10,8 +10,8 @@ do k = 0, dimsizes(waves)-1
 wave     = waves(k)
 foutname =  "agcd_v1_precip_calib_r005_daily_1981-2020.regrid.nc"
 
-ref = 145
-seas = "SHSummer"
+ref = 133
+seas = "NDJFMA"
 ystrt    = 1981
 ylast    = 2018
 
@@ -149,7 +149,7 @@ printVarSummary(comp)
 foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+".nc"
 system("rm "+diro+"precip/"+foutname)
 
-fout = addfile(diro+foutname,"c")
+fout = addfile(diro+"precip/"+foutname,"c")
 fout->composite = comp
 fout->alpha = alpha
 

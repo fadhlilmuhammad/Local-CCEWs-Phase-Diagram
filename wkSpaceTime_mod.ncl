@@ -2043,10 +2043,31 @@ local latN, latS, lonL, lonR, spd, fCrit, tim_taper        \
       printMinMax( x, True )
   end if
 
-xAS    = x(lat|:, lon|:, time|:)
-q      = new((/2,mlon,nSampWin/)       ,typeof(xAS), "No_FillValue")
-peeAS  = new((/nlat,mlon+1,nSampWin+1/),typeof(xAS), "No_FillValue")
-peeAS  = 0.0                       ; initialize
+
+
+  ;-------------------------------------------------------------------
+  ; Decompose to Symmetric and Asymmetric parts
+  ;-------------------------------------------------------------------
+  ; xAS  = decompose2SymAsym( x , 1 )          ; create Asym and Sym parts
+  ; if (debug) then
+  ;     printVarSummary(xAS)                   ; xAS(lat,lon,time) [iret=1]
+  ;     printMinMax(xAS, True)
+  ; end if
+
+
+  ; xnow    = xAS({lat|0:latS}, lon|:, time|:)
+  xAS = x
+  xnow = xAS({lat|0:latS}, lon|:, time|:)
+  delete(xAS)
+  xAS   = xnow
+  delete(xnow)
+  ndims = dimsizes(xAS)
+  nlat = ndims(0)
+
+
+  q      = new((/2,mlon,nSampWin/)       ,typeof(xAS), "No_FillValue")
+  peeAS  = new((/nlat,mlon+1,nSampWin+1/),typeof(xAS), "No_FillValue")
+  peeAS  = 0.0                       ; initialize
 
 ;-------------------------------------------------------------------
 ; Operate on the xAS array
@@ -2055,6 +2076,7 @@ peeAS  = 0.0                       ; initialize
 ; Loop over all latitudes and then perform summing/averaging
 ; on the spectral results.
 ;-------------------------------------------------------------------
+
 
   do nl=0,nlat-1
 
@@ -2542,18 +2564,16 @@ peeAS  = 0.0                       ; initialize
 ; Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
 ;********************************************************************************
 
-   psumsym_nolog  = psum_nolog /psumb_nolog   ; (wave,freq)
+   psumsym_nolog  = psum_nolog / psumb_nolog   ; (wave,freq)
 
    if (debug) then
        printVarSummary(psum_nolog)           ; (freq,wave)
        printMinMax(psum_nolog, True)
+       copy_VarMeta(psum_nolog,psumsym_nolog)
    end if
 
-;-----------------------------------------------------------
-; ANTI-SYMMETRIC: RATIO ( subset to plot )
-;-----------------------------------------------------------
 
-   asym = psum_nolog({freq|minfrq:maxfrq},{wave|minwav4plt:maxwav4plt})
+   asym = psumsym_nolog({freq|minfrq:maxfrq},{wave|minwav4plt:maxwav4plt})
    ;------------------------------------------------------------------
    ; ALL
    ;------------------------------------------------------------------
