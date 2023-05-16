@@ -4,14 +4,22 @@ diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 
-waves = (/"er", "kelvin", "mrg", "td","mjo","td-slow"/)
-do k = 0, dimsizes(waves)-1
 
-wave     = waves(k)
-foutname =  "agcd_v1_precip_calib_r005_daily_1981-2020.regrid.nc"
+waves = (/"er","kelvin","mrg","td"/)
+; waves = (/"mjo","mrg","td"/)
 
-ref = 133
-seas = "NDJFMA"
+remaptype = "regrid"
+
+startwave = 0
+do k = startwave, dimsizes(waves)-1
+wave = waves(k)
+; foutname = "rr_sacad_clean_AU.nc"
+foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
+
+
+print(str_upper(wave))
+ref = 123
+seas = "SHSummer"
 ystrt    = 1981
 ylast    = 2018
 
@@ -54,7 +62,7 @@ ymdStrt   = 19810101
 ymdLast   = 20181231
 
 iStrt     = ind(DATE.eq.ymdStrt)
-print(iStrt)
+; print(iStrt)
 iLast     = ind(DATE.eq.ymdLast)
 
 time        = x&time(iStrt:iLast)
@@ -62,7 +70,7 @@ ymdhms      = cd_calendar(time, 0)
 iseason     = choose_season(seas, ymdhms)
 
 x_sel = x_in(iStrt:iLast,:,:)
-print(cd_calendar(x_sel&time,-2))
+; print(cd_calendar(x_sel&time,-2))
 x_seas = dim_avg_n(x_sel(iseason,:,:),0)
 ; x = x_in
 xavg = conform_dims(dimsizes(x_sel), x_seas, (/1,2/))
@@ -85,9 +93,10 @@ alpha       = new((/9,nlat,nlon/),"float")
 
 comp = composite_waves(x, phase, amp, seas)
 
-print(ftc)
+; print(ftc)
 
 do i = 0, 7
+
   print("phase-"+(i+1))
   nphase  = i+1
   date_phase        = cd_calendar(x&time, -2)
@@ -146,7 +155,7 @@ delete(x_in)
 delete(x)
 printVarSummary(comp)
 
-foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+".nc"
+foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+"."+remaptype+".nc"
 system("rm "+diro+"precip/"+foutname)
 
 fout = addfile(diro+"precip/"+foutname,"c")

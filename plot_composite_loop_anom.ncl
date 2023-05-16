@@ -3,21 +3,38 @@
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/precip/"
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/precip/"
 
-waves  = (/"er", "kelvin", "mrg", "td","mjo","td-slow"/)
+waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
 ; thresh = 1
 minlv = -5.
 maxlv = 5.
 intlv = 0.5
 
+remaptype =  "regrid"
 
 do k =0, dimsizes(waves)-1
   ; write loop content
 
 wave = waves(k)
 seas = "SHAutumn"
-ref = 133
+ref = 123
+
+if seas.eq."SHSummer" then
+  seasmon = "DJF"
+else if seas.eq."SHSpring" then
+  seasmon = "SON"
+else if seas.eq."SHAutumn" then
+  seasmon = "MAM"
+else if seas.eq."SHWinter" then
+  seasmon = "JJA"
+else
+  seasmon = seas
+end if
+end if
+end if
+end if
+
 ; fname = wave+"_wave_composite_"+seas+"_thresh50_25km_sig90.nc"
-fname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+".nc"
+fname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+"."+remaptype+".nc"
 ; fname = "olr_er_wave_composite.nc"
 
 f     = addfile(diri+fname, "r")
@@ -31,7 +48,7 @@ n      = 8
 ;************************************************
 ; create plots
 ;************************************************
-  wks = gsn_open_wks("png",diro+"rain_anom_comp_"+wave+"_"+seas+"ref"+ref)              ; send graphics to PNG file
+  wks = gsn_open_wks("png",diro+"rain_anom_comp_"+wave+"_"+seas+"ref"+ref+"_"+remaptype)              ; send graphics to PNG file
 
   cmap  = read_colormap_file("precip4_diff_19lev")
   cmap(9:10,:) = 0
@@ -163,17 +180,25 @@ n      = 8
   resP@gsnFrame         = False                  ; don't advance panel plot
   resP@gsnPanelLabelBar = True                   ; add common colorbar
   if (wave) .eq. "td" then
-    resP@gsnPanelMainString = str_upper(wave) + "-type waves: "+seas     ; set main title
+    resP@gsnPanelMainString = str_upper(wave) + "-type waves: "+seasmon     ; set main title
   else if (wave) .eq. "mjo" then
-    resP@gsnPanelMainString = str_upper(wave)+ ": "+seas     ; set main title
+    resP@gsnPanelMainString = str_upper(wave)+ ": "+seasmon     ; set main title
   else
-    resP@gsnPanelMainString = str_upper(wave) + " waves: "+seas     ; set main title
+    resP@gsnPanelMainString = str_upper(wave) + " waves: "+seasmon     ; set main title
   end if
   end if
   resP@gsnPanelBottom   = 0.05                   ; add space at bottom
   resP@gsnPanelFigureStrings= (/"P1)","P5)","P2)","P6)","P3)","P7)","P4)","P8)"/) ; add strings to panel
   resP@amJust   = "TopLeft"
   resP@lbLabelStride        = 2
+  resP@lbTitleString  = "[mm/day]"
+  resP@lbTitlePosition = "bottom"
+  resP@lbTopMarginF    = 0.4
+  resP@lbBottomMarginF = 0.005
+  resP@lbTitleFontHeightF = 0.01
+
+  ; resP@gsnPanelMainPosXF  = 0.2
+
   gsn_panel(wks,plot,(/4,2/),resP)               ; now draw as one plot
 
 

@@ -16,11 +16,15 @@ diri     = "data/precip/"
 
 
 waves = (/"kelvin", "er", "mrg", "td", "mjo", "td-slow"/)
+; waves = (/"er"/)
+
+remaptype = "regrid"
 
 startwave = 0
 do k = startwave, dimsizes(waves)-1
+wave = waves(k)
 ; foutname = "rr_sacad_clean_AU.nc"
-foutname = "agcd_v1_precip_calib_r005_1980-2019.regrid.nc"
+foutname = "agcd_v1_precip_calib_r005_1980-2019."+remaptype+".nc"
 
 perc = 95
 var = "precip"
@@ -31,7 +35,7 @@ ylast    = 2018
 
 ref = 145
 wave     = waves(k)
-season   = "NDJFMA"
+season   = "MJJASO"
 f        = addfile(diri+foutname, "r")
 g        = addfile(diro+"local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
 
@@ -214,7 +218,7 @@ copy_VarMeta(comp, x2)
 
 copy_VarCoords(x, alpha)
 
-foutname = wave+"_wave_composite_"+season+"_perc"+perc+"_25km_sig"+sigval+".ref"+ref+".nc"
+foutname = wave+"_wave_composite_"+season+"_perc"+perc+"_25km_sig"+sigval+".ref"+ref+"."+remaptype+".nc"
 ; foutname = wave+"_wave_composite_"+season+"_perc"+perc+".nc"
 system("rm "+diro+foutname)
 

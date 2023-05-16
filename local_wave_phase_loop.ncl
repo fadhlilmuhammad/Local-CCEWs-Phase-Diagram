@@ -9,7 +9,7 @@
 
 load "diag_local_wave_phase.ncl"
 
-waves = (/"kelvin", "er", "mjo", "td", "mrg"/)
+waves = (/ "er","kelvin", "mjo", "td", "mrg"/)
 
 
 do i = 0, dimsizes(waves)-1
@@ -18,12 +18,12 @@ do i = 0, dimsizes(waves)-1
 	fname = "waves.northAU.nc"
 
 	opt = True
-	opt@id = "145"
+	opt@id = "123"
 	opt@stdev_all = True
 	; outname = "local_wave_phase_"+waves(i)+"_forwksum.nc"
 	date_start  = 20161224
 	date_end    = 20170110
-	seas			  = "MJJASO"
+	seas			  = "SHWinter"
 	central_lon = toint(opt@id)
 	NC				  = True
 	PLOT			  = False

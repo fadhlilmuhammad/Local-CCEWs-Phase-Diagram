@@ -4,10 +4,11 @@ load "wkSpaceTime_mod.ncl"
 
 
 lat  = 25
-SEAS = "SHSpring"
+mode = "NH"
+SEAS = "MJJASO"
 diri  = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/STSA/"
 wkdir = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"
-f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+".nc","r")
+f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+"."+mode+".nc","r")
 
 coord = f->FIG_3_SYM
 x = f->FIG_3_ALL
@@ -122,9 +123,9 @@ print(period)
 ; res@tmYLLabels        = period
 
 pltType = "png"
-wks  = gsn_open_wks(pltType,wkdir+"/Fig3.symAsym."+lat+".South_"+SEAS)
+wks  = gsn_open_wks(pltType,wkdir+"/Fig3.symAsym."+lat+".South_"+SEAS+mode)
 gsn_define_colormap(wks,pltColorMap)
-res@gsnCenterString = "OLR: "+SEAS+" Southern Hemispher"
+res@gsnCenterString = "OLR: "+SEAS+" "+mode
 plot = gsn_csm_contour(wks,symasym,res)
 
 

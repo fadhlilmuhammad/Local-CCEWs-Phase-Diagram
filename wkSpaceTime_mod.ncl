@@ -1867,6 +1867,7 @@ procedure FR04SpaceTime_Seas (x[*][*][*]:numeric                  \
                       ,spd[1]:integer                      \
                       ,nDayWin[1]:integer                  \
                       ,nDaySkip[1]:integer                 \
+                      ,mode[1]:string                      \
                       ,opt[1]:logical)
 
 local latN, latS, lonL, lonR, spd, fCrit, tim_taper        \
@@ -1885,6 +1886,9 @@ local latN, latS, lonL, lonR, spd, fCrit, tim_taper        \
     , i, pt8cpd, spec, nCn, nExtra
 
   begin
+
+; mode "NH" or "SH"
+
 
   ; if seas.eq."NHSummer" then
   ; else if seas.eq."NHWinter" then
@@ -2056,14 +2060,28 @@ local latN, latS, lonL, lonR, spd, fCrit, tim_taper        \
 
 
   ; xnow    = xAS({lat|0:latS}, lon|:, time|:)
-  xAS = x
-  xnow = xAS({lat|0:latS}, lon|:, time|:)
-  delete(xAS)
-  xAS   = xnow
-  delete(xnow)
-  ndims = dimsizes(xAS)
-  nlat = ndims(0)
 
+  if mode.eq."SH" then
+    xAS = x
+    xnow = xAS({lat|0:latS}, lon|:, time|:)
+    delete(xAS)
+
+    xAS   = xnow
+    delete(xnow)
+    ndims = dimsizes(xAS)
+    nlat = ndims(0)
+
+  else if mode.eq."NH" then
+    xAS = x
+    xnow = xAS({lat|latN:0}, lon|:, time|:)
+    delete(xAS)
+
+    xAS   = xnow
+    delete(xnow)
+    ndims = dimsizes(xAS)
+    nlat = ndims(0)
+  end if
+  end if
 
   q      = new((/2,mlon,nSampWin/)       ,typeof(xAS), "No_FillValue")
   peeAS  = new((/nlat,mlon+1,nSampWin+1/),typeof(xAS), "No_FillValue")

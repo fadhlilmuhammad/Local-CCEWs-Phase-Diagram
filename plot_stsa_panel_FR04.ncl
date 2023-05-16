@@ -4,12 +4,12 @@ load "wkSpaceTime_mod.ncl"
 
 
 
-
+mode = "NH"
 lat  = 25
-SEAS = "NDJFMA"
+SEAS = "SHSummer"
 diri  = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/STSA/"
 wkdir = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"
-f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+".nc","r")
+f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+"."+mode+".nc","r")
 
 coord = f->FIG_3_ALL
 x = f->FIG_3_ALL
@@ -18,7 +18,7 @@ copy_VarCoords(coord,x)
 copy_VarAtts(coord,x)
 
 
-nseas = 2
+nseas = 4
 ndim  = dimsizes(coord)
 printVarSummary(ndim)
 
@@ -26,15 +26,17 @@ stsa = new((/nseas, ndim(0), ndim(1)/), float)
 
 if nseas.eq.4 then
 seasname = (/"SHSpring","SHSummer", "SHAutumn", "SHWinter"/)
+seasmon  = (/"SON","DJF","MAM","JJA"/)
 else
 seasname = (/"MJJASO", "NDJFMA"/)
+seasmon = seasname
 end if
 
 
 do i = 0, nseas-1
 
   SEAS  = seasname(i)
-  f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+".nc","r")
+  f  = addfile(diri+"FR04.SpaceTime."+SEAS+"."+lat+"."+mode+".nc","r")
   a  = f->FIG_3_ALL
   stsa(i,:,:) = (/a/)
   delete(a)
@@ -156,24 +158,35 @@ print(period)
 ; res@tmYLLabels        = period
 
 pltType = "png"
-wks  = gsn_open_wks(pltType,wkdir+"/Fig3.FR04.symAsym."+lat+"_"+nseas+"season")
+wks  = gsn_open_wks(pltType,wkdir+"/Fig3.FR04.symAsym."+lat+"_"+nseas+"season."+mode)
 gsn_define_colormap(wks,pltColorMap)
 
 plot = new(nseas, graphic)
 
 
-dum = new(32*nseas+1,graphic)
+dum = new(34*nseas+1,graphic)
 dom = new((/nseas, 7/), graphic)
 j=0
 print(j)
-do i = 0, nseas-1
-res@gsnCenterStringFontHeightF = 0.023
-res@gsnCenterString = "OLR: "+seasname(i)+" "+lat+"N-"+lat+"S"
 
-if seas.ne."SHWinter" then
-  res@cnLevels = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8,1.9,2.0/)
+if mode.eq."NH" then
+  modename = "Northern hemisphere"
 else
-  res@cnLevels = (/0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9,1.0/)
+  modename = "Southern hemisphere"
+end if
+
+do i = 0, nseas-1
+res@gsnCenterStringFontHeightF = 0.018
+res@gsnCenterString = "OLR:"+modename+" (" +seasmon(i)+")"
+
+if mode.eq."SH" then
+  if seasname(i).ne."SHWinter" then
+    res@cnLevels = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8,1.9,2.0/)
+  else
+    res@cnLevels = (/0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9,1.0/)
+  end if
+else
+  res@cnLevels = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8,1.9,2.0/)
 end if
 
 plot(i) = gsn_csm_contour(wks,symasym(i,:,:),res)
@@ -190,6 +203,7 @@ dom(i,:) = addHorVertLines_panel(wks, plot(i), x1,x2,y1,y2,y3,y4 ) ; add dashed 
 
 ; draw dispersion line
 dum(j) = gsn_add_polyline(wks,plot(i),Apzwn(3,0,:),Afreq(3,0,:),dcres)
+dum(j+33) = gsn_add_polyline(wks,plot(i),Apzwn(3,1,:),Afreq(3,1,:),dcres)
 dum(j+1) = gsn_add_polyline(wks,plot(i),Apzwn(3,2,:),Afreq(3,2,:),dcres)
 dum(j+2) = gsn_add_polyline(wks,plot(i),Apzwn(4,0,:),Afreq(4,0,:),dcres)
 dum(j+3) = gsn_add_polyline(wks,plot(i),Apzwn(4,1,:),Afreq(4,1,:),dcres)
@@ -305,7 +319,7 @@ dum(j+30) = gsn_add_text(wks,plot(i),"n=1 ER",-10.7,.07,txres)
 dum(j+31) = gsn_add_text(wks,plot(i),"TD-type",-10.0,.3,txres)
 dum(j+32) = gsn_add_text(wks,plot(i),"MJO",6.0,.03,txres)
 
-j = j+32
+j = j+34
 end do
 
 ;************************************************

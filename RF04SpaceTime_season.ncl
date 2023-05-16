@@ -15,7 +15,7 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/diagnostics_cam.ncl"
 load "wkSpaceTime_mod.ncl"
 
-  seas = "MJJASO"
+  seas = "SHWinter"
   pwdir   = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
   diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/STSA/"
 
@@ -26,6 +26,7 @@ load "wkSpaceTime_mod.ncl"
   nDaySkip = -65     ; time (days) between temporal windows [segments]
                      ; negative means there will be overlapping
                      ; temporal segments
+  mode = "NH"
 
   opt      = True
   opt@debug= True
@@ -119,8 +120,8 @@ load "wkSpaceTime_mod.ncl"
   opt@pltTitle   = "OLR: "+seas+" "+latN+"N-"+latN+"S"
   opt@netCDF = True
   opt@dirNetCDF = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/STSA/"
-  opt@filNetCDF = "FR04.SpaceTime."+seas+"."+latN+".nc"
+  opt@filNetCDF = "FR04.SpaceTime."+seas+"."+latN+"."+mode+".nc"
   FR04SpaceTime_Seas (olr, spec,  diro, case, var             \
-              ,latN, spd, nDayWin, nDaySkip, opt  )
+              ,latN, spd, nDayWin, nDaySkip, mode, opt  )
 
   end if
