@@ -15,8 +15,8 @@ do k =0, dimsizes(waves)-1
   ; write loop content
 
 wave = waves(k)
-seas = "SHAutumn"
-ref = 123
+seas = "SHSummer"
+ref = 143
 
 if seas.eq."SHSummer" then
   seasmon = "DJF"

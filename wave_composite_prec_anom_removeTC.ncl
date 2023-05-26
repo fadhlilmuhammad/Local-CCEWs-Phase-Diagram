@@ -18,7 +18,7 @@ foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
 
 
 print(str_upper(wave))
-ref = 123
+ref = 143
 seas = "SHSummer"
 ystrt    = 1981
 ylast    = 2018
