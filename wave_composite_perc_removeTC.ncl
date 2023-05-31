@@ -1,7 +1,7 @@
 load "diag_local_wave_phase.ncl"
 
-diro     = "dataout/"
-diri     = "data/precip/"
+diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
+diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 ; foutname = "agcd_v1_precip_calib_r005_weekrunsum_1980-2019.nc"
 
 ; ;************************************************
@@ -15,7 +15,7 @@ diri     = "data/precip/"
 ;   wgt   = filwgts_lanczos (nWgt, ihp, fca, fcb, sigma )
 
 
-waves = (/"kelvin", "er", "mrg", "td", "mjo", "td-slow"/)
+waves = (/ "er","kelvin", "mrg", "td", "mjo", "td-slow"/)
 ; waves = (/"er"/)
 
 remaptype = "regrid"
@@ -24,7 +24,7 @@ startwave = 0
 do k = startwave, dimsizes(waves)-1
 wave = waves(k)
 ; foutname = "rr_sacad_clean_AU.nc"
-foutname = "agcd_v1_precip_calib_r005_1980-2019."+remaptype+".nc"
+foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
 
 perc = 95
 var = "precip"
@@ -33,14 +33,14 @@ var = "precip"
 ystrt    = 1981
 ylast    = 2018
 
-ref = 145
+ref = 133
 wave     = waves(k)
-season   = "MJJASO"
+season   = "SHAutumn"
 f        = addfile(diri+foutname, "r")
-g        = addfile(diro+"local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
+g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
 
 
-ftc      = asciiread("TC_dates.csv", -1, "integer")
+ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
 
 amp_in   = g->amp
 printVarSummary(amp_in)
@@ -60,7 +60,7 @@ delete(time)
 phase    = g->phase(istrt(0):ilast(dimsizes(ilast)-1))
 ; print(phase&time)
 
-x_raw        = short2flt(f->$var$(:,{-20:-10},:))
+x_raw        = short2flt(f->$var$(:,{:-10},:))
 printVarSummary(x_raw)
 ; load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
@@ -157,9 +157,9 @@ do i = 0, 7
   xBootHi    = bootstrap_estimate(xBoot, sighi, False)   ; 97.5% upper confidence bound
 
   ; tester     = dim_avg_n_Wrap(xphase,0)
-  print(comp(i+1,20:35,94:124))
-  print(xBootLow(20:35,94:124))
-  print(xBootHi(20:35,94:124))
+  ; print(comp(i+1,20:35,94:124))
+  ; print(xBootLow(20:35,94:124))
+  ; print(xBootHi(20:35,94:124))
   iflag = True
 
   alpha(i+1,:,:)    = where(((comp(i+1,:,:).ge.xBootHi) .or. (comp(i+1,:,:).le.xBootLow)), 1., 0.)
@@ -218,20 +218,20 @@ copy_VarMeta(comp, x2)
 
 copy_VarCoords(x, alpha)
 
-foutname = wave+"_wave_composite_"+season+"_perc"+perc+"_25km_sig"+sigval+".ref"+ref+"."+remaptype+".nc"
+foutname = wave+"_wave_composite_"+season+"_perc"+perc+"_025_sig"+sigval+".ref"+ref+"."+remaptype+".nc"
 ; foutname = wave+"_wave_composite_"+season+"_perc"+perc+".nc"
-system("rm "+diro+foutname)
+system("rm "+diro+"precip/"+foutname)
 
-fout = addfile(diro+foutname,"c")
+fout = addfile(diro+"precip/"+foutname,"c")
 fout->composite = comp
 fout->composite_anom = x
 fout->composite_anom_non = x2
 fout->alpha = alpha
 
-foutseas = wave+"_"+season+"_perc"+perc+"_25km_sig"+sigval+".nc"
-system("rm "+diro+foutseas)
+foutseas = wave+"_"+season+"_perc"+perc+"_025_sig"+sigval+".nc"
+system("rm "+diro+"precip/"+foutseas)
 
-fout2 = addfile(diro+foutseas,"c")
+fout2 = addfile(diro+"precip/"+foutseas,"c")
 fout2->seas = dim_avg_n_Wrap(x_freq,0)
 ; fout2->seas_med = dim_median_n(xseas,0)
 fout2->seas_th = x_stat_in
