@@ -5,15 +5,7 @@ load "diag_local_wave_phase.ncl"
 diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
-; fname    = "VIMFC_ERA5_MAKEOWN_1980-2019.nc"
-fname = "vimfc.day.anomalies.1980-2019.nc"
-; fname = "mvimd.day.anomalies.1980-2019.nc"
-f        = addfile(diri+fname, "r")
-
-type = "makeown.dailyanom"
-; var = "mvimd_anom_sm"
-var = "vimfc_anom_sm"
-vimfc    = f->$var$
+; fname    = "VIMFC_ERA5_1980-2018.nc"
 
 waves = (/ "er","kelvin", "mrg", "td", "mjo"/)
 
@@ -29,6 +21,13 @@ do k = startwave, dimsizes(waves)-1
   season   = "SHSummer"
   g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
   ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
+
+  fname = "mvimd."+wave+".25.nc"
+  f        = addfile(diri+fname, "r")
+
+  type = "filtered"
+  var = wave
+  vimfc    = f->$wave$
 
   amp_in   = g->amp
   printVarSummary(amp_in)
@@ -142,9 +141,7 @@ do k = startwave, dimsizes(waves)-1
 
   copy_VarCoords(vimfc, alpha)
 
-  ; foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".fromera"+type+".nc"
-  ; foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".raw."+type+".nc"
-  foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+"."+type+".nc"
+  foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".fromera."+type+".nc"
   ; foutname = wave+"_wave_composite_"+season+"_perc"+perc+".nc"
   system("rm "+diro+"dynamics/"+foutname)
 

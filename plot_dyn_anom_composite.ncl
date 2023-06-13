@@ -6,37 +6,14 @@ diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/dynamics/"
 
 waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
 ; thresh = 1
-minlv = -10.
-maxlv = 10.
-intlv = 86400.
+minlv = -5.
+maxlv = 5.
+intlv = .5
+scale = 86400;./1000.
 
 seas = "SHSummer"
 
-; fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"mvimd.daily.regrid.1980-2019.nc"
-fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"VIMFC_ERA5_1980-2018.nc"
-h = addfile(fname,"r")
-; xraw = h->mvimd
-xraw = h->vimfc
-
-type = "raw"
-data = "makeown"
-
-replace_ieeenan(xraw, default_fillvalue("float"), 0)
-t = xraw&time
-yyyymmdd = cd_calendar(t,-2)
-ystrt = 19810101
-ylast = 20181231
-istrt    = ind(yyyymmdd.eq.ystrt)
-ilast    = ind(yyyymmdd.eq.ylast)
-
-T = xraw&time(istrt:ilast)
-ymdhms      = cd_calendar(T, 0)
-
-; prilast)-1
-; print(nlast)
-iseason     = choose_season(seas, ymdhms)
-xavg        = dim_avg_n_Wrap(xraw(iseason,:,:),0)
-
+type = "fromera.dailyanom"
 ; remaptype =  "regrid"
 
 do k =0, dimsizes(waves)-1
@@ -61,21 +38,14 @@ end if
 end if
 
 ; fname = wave+"_wave_composite_"+seas+"_thresh50_25km_sig90.nc"
-
-if data.eq."fromera" then
-fname = wave+"_wave_composite_"+seas+"_vimfc_sig95.ref"+ref+"."+data+".nc"
-scale = 86400.
-else
-fname = wave+"_wave_composite_"+seas+"_vimfc_sig95.ref"+ref+"."+data+"."+type+".nc"
-scale = -86400./1000.
-end if
+fname = wave+"_wave_composite_"+seas+"_vimfc_sig95.ref"+ref+"."+type+".nc"
+; fname = wave+"_wave_composite_"+seas+"_vimfc_sig95.ref"+ref+".nc"
 ; fname = "olr_er_wave_composite.nc"
 
 f     = addfile(diri+fname, "r")
 x_in  = short2flt(f->composite)
 a     = short2flt(f->alpha)
 
-x_in = -x_in
 x_in@_FillValue = default_fillvalue("float")
 replace_ieeenan(x_in, default_fillvalue("float"), 0)
 a@_FillValue = default_fillvalue("float")
@@ -95,12 +65,10 @@ n      = 8
 ; create plots
 ;************************************************
   ; wks = gsn_open_wks("png",diro+"dyn_anom_comp_fromera_"+wave+"_"+seas+"ref"+ref)              ; send graphics to PNG file
-    wks = gsn_open_wks("png",diro+"dyn_comp_"+wave+"_"+seas+"ref"+ref+"."+type+data)              ; send graphics to PNG file
+    wks = gsn_open_wks("png",diro+"dyn_anom_comp_dailyanom_"+wave+"_"+seas+"ref"+ref+"."+type)              ; send graphics to PNG file
 
   cmap  = read_colormap_file("NCV_blu_red")
-  cmap = cmap(::-1,:)
   cmap(9:10,:) = 0
-
 
   ; cmap(12:13,:) = 0
   ; ncmap = dimsizes(cmap(:,0))
@@ -122,7 +90,7 @@ n      = 8
 
   res@mpFillOn            = False
   res@mpMaxLatF           = -5
-  res@mpMinLatF           = -25
+  res@mpMinLatF           = -30
 
   res@mpMaxLonF           = 170
   res@mpMinLonF           = 90
@@ -187,10 +155,6 @@ n      = 8
   res2@gsnContourNegLineDashPattern = 2
   res2@gsnContourZeroLineThicknessF = 2.5
 
-  if data.ne."fromera" then
-    x_in@units = "g/kg s^-1"
-  end if
-
   x_con = x_in*scale
   copy_VarCoords(x_in,x_con)
 
@@ -244,8 +208,7 @@ n      = 8
   resP@gsnPanelFigureStrings= (/"P1)","P5)","P2)","P6)","P3)","P7)","P4)","P8)"/) ; add strings to panel
   resP@amJust   = "TopLeft"
   resP@lbLabelStride        = 2
-  ; resP@lbTitleString  = x_in@units + "x"+sprintf("%10.5g",scale)
-  resP@lbTitleString = "[ mm/day ]"
+  resP@lbTitleString  = "[mm/day]"
   resP@lbTitlePosition = "bottom"
   resP@lbTopMarginF    = 0.4
   resP@lbBottomMarginF = 0.005

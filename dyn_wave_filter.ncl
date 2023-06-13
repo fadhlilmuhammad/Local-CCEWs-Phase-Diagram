@@ -11,12 +11,12 @@ begin
 
 smooth = True
 folder = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
-folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/olr_filtered/"
-wave = "er"; input variable (mjo, kelvin, er, mrg, eig, td)
+folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+wave = "mjo"; input variable (mjo, kelvin, er, mrg, eig, td)
 
 print("Reading the input file...")
 
-; f = addfile(folder + "olr.day.mean.1980-2019.nc", "r")
+; f = addfile(folder + "mvimd.day.mean.1980-2019.nc", "r")
 f = addfile(folder + "mvimd.daily.regrid.1980-2019.nc", "r")
 
 date = cd_calendar(f->time, -2)
@@ -31,7 +31,7 @@ lat = f->lat({latS:latN})
 lon = f->lon
 
 
-olr = short2flt(f->olr(time|date_start:date_end, {lat|latS:latN}, lon|:))
+mvimd = short2flt(f->mvimd(time|date_start:date_end, {lat|latS:latN}, lon|:))
 
 print("Calculating climatology and anomaly...")
 
@@ -44,12 +44,12 @@ yyyyddd = year * 1000 + ddd
 
 if smooth then
 	nhar = 1 ; ONLY CONSIDER ANNUal cycle
-	climday     = clmDayTLL(olr, yyyyddd)
+	climday     = clmDayTLL(mvimd, yyyyddd)
 	climatology = smthClmDayTLL(climday,nhar)
-	anomaly = calcDayAnomTLL(olr, yyyyddd, climatology)
+	anomaly = calcDayAnomTLL(mvimd, yyyyddd, climatology)
 else
-	climatology = clmDayTLL(olr, yyyyddd)
-	anomaly = calcDayAnomTLL(olr, yyyyddd, climatology)
+	climatology = clmDayTLL(mvimd, yyyyddd)
+	anomaly = calcDayAnomTLL(mvimd, yyyyddd, climatology)
 end if
 print("Filtering...")
 
@@ -76,35 +76,35 @@ if (wave.eq."mjo") then
 	wavenumber = (/1, 5/)
 	period = (/20, 100/)
 	depth = (/mis, mis/)
-	filtered@long_name = "Madden-Julian Oscillations in Outgoing Longwave Radiation"
+	filtered@long_name = "Madden-Julian Oscillations in vertically integrated moisture conv"
 else if (wave.eq."kelvin") then
 	wavenumber = (/1, 14/)
 	period = (/2.5, 17/)
 	depth = (/8, 90/)
-	filtered@long_name = "Kelvin Waves in Outgoing Longwave Radiation"
+	filtered@long_name = "Kelvin Waves in vertically integrated moisture conv"
 else if (wave.eq."er") then
 	wavenumber = (/-10, -1/)
 	period = (/9, 72/)
 	depth = (/8, 90/)
-	filtered@long_name = "Equatorial Rossby Waves in Outgoing Longwave Radiation"
+	filtered@long_name = "Equatorial Rossby Waves in vertically integrated moisture conv"
 else if (wave.eq."mrg") then
 	wavenumber = (/-10, -1/)
 	period = (/3, 10/)
 	depth = (/8, 90/)
-	filtered@long_name = "Mixed Rossby-Gravity Waves in Outgoing Longwave Radiation"
+	filtered@long_name = "Mixed Rossby-Gravity Waves in vertically integrated moisture conv"
 else if (wave.eq."eig") then
 	wavenumber = (/1, 14/)
 	period = (/1, 5/)
 	depth = (/12, 50/)
 	wave_type = "ig0"
-	filtered@long_name = "Eastward Inertio Gravity Waves in Outgoing Longwave Radiation"
+	filtered@long_name = "Eastward Inertio Gravity Waves in vertically integrated moisture conv"
 else if (wave.eq."td") then
 	wavenumber = (/-20, -6/)
 	; period = (/2.5, 10/)
 	period = (/2.5, 5/)
 	depth = (/mis, 90/)
 	wave_type = "td-type"
-	filtered@long_name = "Tropical Depression-Type Waves in Outgoing Longwave Radiation"
+	filtered@long_name = "Tropical Depression-Type Waves in vertically integrated moisture conv"
 end if
 end if
 end if
@@ -122,8 +122,8 @@ printMinMax(filtered, False)
 
 print("Opening the output file...")
 
-system("rm "+folderout+"olr." + wave + "."+latN+".nc")
-g = addfile(folderout+"olr." + wave + "."+latN+".nc", "c")
+system("rm "+folderout+"mvimd." + wave + "."+latN+".nc")
+g = addfile(folderout+"mvimd." + wave + "."+latN+".nc", "c")
 
 print("Writing the output file...")
 

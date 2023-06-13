@@ -38,25 +38,31 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 ; f = addfile(diri + "q_era5_daily.nc", "r")
 
 
-i = addfile(diri + "u_era5_daily.nc", "r")
-j = addfile(diri + "v_era5_daily.nc", "r")
-f = addfile(diri + "q_era5_daily.nc", "r")
+i = addfile(diri + "u_era5_oper_pl_20000101.daily.nc", "r")
+j = addfile(diri + "v_era5_oper_pl_20000101.daily.nc", "r")
+f = addfile(diri + "q_era5_oper_pl_20000101.daily.nc", "r")
 
 TIME2 = f->time
 date = cd_calendar(TIME2, -2)
-istrt= ind(date.eq.19800101)
-ilast= ind(date.eq.20191231)
+; istrt= ind(date.eq.19800101)
+; ilast= ind(date.eq.20191231)
 
-time = (f->time(istrt:ilast))
+time = (f->time)
 level = int2flt(f->level)
-latitude = dble2flt(f->lat({-30:30}))
-longitude = dble2flt(f->lon)
+latitude = dble2flt(f->latitude({-30:30}))
+longitude = dble2flt(f->longitude)
 
-nt   = time(100)          ; date for plotting and testing
 
-q = short2flt(f->q(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
-u = short2flt(i->u(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
-v = short2flt(j->v(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
+
+; nt   = time(100)          ; date for plotting and testing
+
+q = short2flt(f->q(time|:, level|:, {latitude|-30:30}, longitude|:))
+u = short2flt(i->u(time|:, level|:, {latitude|-30:30}, longitude|:))
+v = short2flt(j->v(time|:, level|:, {latitude|-30:30}, longitude|:))
+
+replace_ieeenan(q,default_fillvalue("float"),0)
+replace_ieeenan(u,default_fillvalue("float"),0)
+replace_ieeenan(v,default_fillvalue("float"),0)
 
 printVarSummary(q)
 printMinMax(q,0)
@@ -222,7 +228,7 @@ printVarSummary(mfc_adv[2])
   copy_VarCoords(q(:,0,:,:),VIMFC)            ; (time,lat,lon)
 
 
-outname_vimfc = "VIMFC_ERA5_1980-2018.nc"
+outname_vimfc = "trybudget.nc"
 system("rm "+diro+outname_vimfc)
 
 fout = addfile(diro+outname_vimfc, "c")

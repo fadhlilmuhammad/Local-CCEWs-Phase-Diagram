@@ -21,14 +21,16 @@ begin
 
    nhar    = 1                                ; number of fourier comp
 
-   var     = "olr"                            ; name of file
-   vName   = "olr"                            ; name for plots
+   var     = "vimfc"                            ; name of file
+   vName   = "vimfc"                            ; name for plots
 
   ;diri    = "/project/cas/shea/CDC/"         ; input directory
   ;diri    = "/Users/shea/Data/AMWG/"         ; input directory
    ; diri    = "data/era5/"                             ; new input directory
-   fili    = var+".day.mean.nc"               ; input file
+   ; fili    = var+".day.mean.nc"               ; input file
 
+   fili = "VIMFC_ERA5_MAKEOWN_1980-2019.nc"
+   ; fili = "mvimd.daily.regrid.1980-2019.nc"
    diri    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
    ; fili    = var+"850.daily.1979-2021.regrid.nc"       x        ; input file
 

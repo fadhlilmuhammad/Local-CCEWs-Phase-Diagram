@@ -38,27 +38,35 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 ; f = addfile(diri + "q_era5_daily.nc", "r")
 
 
-i = addfile(diri + "u_era5_daily.nc", "r")
-j = addfile(diri + "v_era5_daily.nc", "r")
-f = addfile(diri + "q_era5_daily.nc", "r")
+i = addfile(diri + "u_era5_oper_pl_20000101.daily.nc", "r")
+j = addfile(diri + "v_era5_oper_pl_20000101.daily.nc", "r")
+f = addfile(diri + "q_era5_oper_pl_20000101.daily.nc", "r")
 
 TIME2 = f->time
 date = cd_calendar(TIME2, -2)
-istrt= ind(date.eq.19800101)
-ilast= ind(date.eq.20191231)
+; istrt= ind(date.eq.19800101)
+; ilast= ind(date.eq.20191231)
 
-time = (f->time(istrt:ilast))
+time = (f->time)
 level = int2flt(f->level)
-latitude = dble2flt(f->lat({-30:30}))
-longitude = dble2flt(f->lon)
+latitude = dble2flt(f->latitude)
+longitude = dble2flt(f->longitude)
 
-nt   = time(100)          ; date for plotting and testing
 
-q = short2flt(f->q(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
-u = short2flt(i->u(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
-v = short2flt(j->v(time|istrt:ilast, level|:, {lat|-30:30}, lon|:))
+
+; nt   = time(100)          ; date for plotting and testing
+
+q = short2flt(f->q(:,:,::-1,:))
+u = short2flt(i->u(:,:,::-1,:))
+v = short2flt(j->v(:,:,::-1,:))
+
+replace_ieeenan(q,default_fillvalue("float"),0)
+replace_ieeenan(u,default_fillvalue("float"),0)
+replace_ieeenan(v,default_fillvalue("float"),0)
 
 printVarSummary(q)
+printVarSummary(u)
+printVarSummary(v)
 printMinMax(q,0)
 
   ptop = 100              ; 'shum' upper level
@@ -118,7 +126,7 @@ printVarSummary(level)
   cyclic    = True   ; Grid is global
   opt_adv   = 1
 
-  mfc_adv   = advect_variable_cfd(u,v,-q, latitude, longitude, cyclic, long_name, units, opt_adv)
+  mfc_adv   = advect_variable(u,v,-q, 1,  long_name, units, opt_adv)
   ; mfc_adv   = mfc_adv
   ;
   ; do i = 0, 2
@@ -135,7 +143,7 @@ printVarSummary(level)
 ;   MFC_conv   = -q*((du/dx)+(dv/dy) )      ; div(div)-vergence
 ;*************************************************
 
-  duv  =uv2dv_cfd(u, v, latitude, longitude, 2)        ; (1/m)(m/s) => (1/s) ; (time,level,lat,lon)
+  duv  =uv2dvF_Wrap(u, v)        ; (1/m)(m/s) => (1/s) ; (time,level,lat,lon)
 
   printVarSummary(duv)
   mfc_conv   = -q*duv
@@ -222,7 +230,7 @@ printVarSummary(mfc_adv[2])
   copy_VarCoords(q(:,0,:,:),VIMFC)            ; (time,lat,lon)
 
 
-outname_vimfc = "VIMFC_ERA5_1980-2018.nc"
+outname_vimfc = "trybudget_spectral.nc"
 system("rm "+diro+outname_vimfc)
 
 fout = addfile(diro+outname_vimfc, "c")

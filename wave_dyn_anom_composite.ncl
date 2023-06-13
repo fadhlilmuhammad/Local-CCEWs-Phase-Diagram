@@ -6,32 +6,40 @@ diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 ; fname    = "VIMFC_ERA5_MAKEOWN_1980-2019.nc"
-fname = "vimfc.day.anomalies.1980-2019.nc"
 ; fname = "mvimd.day.anomalies.1980-2019.nc"
-f        = addfile(diri+fname, "r")
 
-type = "makeown.dailyanom"
+; type = "dailyanom"
+type = "seasanom"
 ; var = "mvimd_anom_sm"
-var = "vimfc_anom_sm"
-vimfc    = f->$var$
+; var = "vimfc_anom"
+var = "mvimd_anom"
+data = "fromera"
+
+season = "SHSummer"
 
 waves = (/ "er","kelvin", "mrg", "td", "mjo"/)
 
 ystrt = 1981
 ylast = 2018
 
+fname = var+"_"+season+"."+ystrt+"-"+ylast+"."+data+"."+type+".nc"
 startwave = 0
+
+
+f        = addfile(diro+"dynamics/"+fname, "r")
+vimfc    = f->$var$
+
+
 do k = startwave, dimsizes(waves)-1
 
-
+  print(waves(k))
   ref = 133
   wave     = waves(k)
-  season   = "SHSummer"
   g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
   ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
 
   amp_in   = g->amp
-  printVarSummary(amp_in)
+  ; printVarSummary(amp_in)
 
   time     = cd_calendar(amp_in&time, 0)
   istrt    = ind(time(:,0).eq.ystrt)
@@ -55,10 +63,10 @@ do k = startwave, dimsizes(waves)-1
   ilast   = ind(DATE(:,0).eq.ylast)
 
   ; printVarSummary(TIME(13879))
-  print(istrt(0))
-  ; print(istrt)
+  ;print(ilast)
+  ; ;print(istrt)
 
-  time        = TIME(istrt(0):ilast(dimsizes(ilast)-1))
+  time        = TIME
   ymdhms      = cd_calendar(time, 0)
   iseason     = choose_season(season, ymdhms)
 
@@ -78,7 +86,7 @@ do k = startwave, dimsizes(waves)-1
   vimfc_seaschoose     = vimfc(indchoose,:,:)
   nlat        = dimsizes(vimfc_seaschoose&lat)
   nlon        = dimsizes(vimfc_seaschoose&lon)
-  print(cd_calendar(vimfc_seaschoose&time,-2))
+  ; ;print(cd_calendar(vimfc_seaschoose&time,-2))
   printVarSummary(vimfc_seaschoose)
 
 
@@ -88,7 +96,7 @@ do k = startwave, dimsizes(waves)-1
 
   phase_seas = phase(iseason_p)
   comp = composite_waves(vimfc_seaschoose,phase, amp, season)
-  vimfc_seas      = dim_avg_n_Wrap(vimfc_seaschoose(:,:,:),0)
+  ; vimfc_seas      = dim_avg_n_Wrap(vimfc_seaschoose(:,:,:),0)
 
 
   do i = 0, 7
@@ -97,7 +105,7 @@ do k = startwave, dimsizes(waves)-1
     date_phase        = cd_calendar(vimfc_seaschoose&time, -2)
     indactive         = lookup_phase_index_rmvtc(phase_seas,amp, date_phase, nphase,ftc )
     printVarSummary(indactive)
-    ; print(num(indactive))
+    ; ;print(num(indactive))
     xphase            = vimfc_seaschoose(indactive,:,:)
 
     ; pall     =
@@ -112,9 +120,9 @@ do k = startwave, dimsizes(waves)-1
     xBoot      = BootStrap[0]
 
     siglow      = (100. - sigval)/200.
-    print(siglow)
+    ;print(siglow)
     sighi       = (1. - siglow)
-    print(sighi)
+    ;print(sighi)
 
     xBootLow   = bootstrap_estimate(xBoot, siglow, False)   ;  2.5% lower confidence bound
     xBootHi    = bootstrap_estimate(xBoot, sighi, False)   ; 97.5% upper confidence bound
@@ -138,13 +146,12 @@ do k = startwave, dimsizes(waves)-1
   alpha&phase = (/0,1,2,3,4,5,6,7,8/)
 
   ; copy_VarCoords(xseas, vimfc_seas)
-  printVarSummary(vimfc_seas)
+  ; printVarSummary(vimfc_seas)
 
   copy_VarCoords(vimfc, alpha)
 
   ; foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".fromera"+type+".nc"
-  ; foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".raw."+type+".nc"
-  foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+"."+type+".nc"
+  foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+"."+data+"."+type+".nc"
   ; foutname = wave+"_wave_composite_"+season+"_perc"+perc+".nc"
   system("rm "+diro+"dynamics/"+foutname)
 
