@@ -18,13 +18,13 @@ foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
 
 
 print(str_upper(wave))
-ref = 143
+ref = 133
 seas = "SHSummer"
 ystrt    = 1981
 ylast    = 2018
 
 f        = addfile(diri+foutname, "r")
-g        = addfile(diro+"local_wave_phase/"+"local_"+wave+"_phase_"+seas+"."+ref+".nc", "r")
+g        = addfile(diro+"local_wave_phase/"+"local_"+wave+"_phase_"+seas+"."+ref+".noTC.nc", "r")
 
 ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
 
@@ -69,18 +69,38 @@ time        = x&time(iStrt:iLast)
 ymdhms      = cd_calendar(time, 0)
 iseason     = choose_season(seas, ymdhms)
 
-x_sel = x_in(iStrt:iLast,:,:)
+year    = toint( ymdhms(:,0) )
+month   = toint( ymdhms(:,1) )
+day     = toint( ymdhms(:,2) )
+ddd     = day_of_year(year, month, day)
+yyyyddd = year*1000 + ddd
+
+x_sel2 = x_in(iStrt:iLast,:,:)
 ; print(cd_calendar(x_sel&time,-2))
-x_seas = dim_avg_n(x_sel(iseason,:,:),0)
+x_seas = dim_avg_n(x_sel2(iseason,:,:),0)
 ; x = x_in
-xavg = conform_dims(dimsizes(x_sel), x_seas, (/1,2/))
+xavg = conform_dims(dimsizes(x_sel2), x_seas, (/1,2/))
 printVarSummary(xavg)
-printVarSummary(x_sel)
+printVarSummary(x_sel2)
+
+;***********************************************************
+; Compute daily climatology: raw and then 'smoothed'
+;***********************************************************
+x_rave = runave_n_Wrap(x_sel2,30,0,0)
+hClmDay    = clmDayTLL(x_rave, yyyyddd)     ; daily climatology at each grid point
+printVarSummary(hClmDay)
 
 delete(x)
-x      = x_sel - xavg
+;***********************************************************
+; Compute daily anomalies using raw and smoothed daily climatologies
+;***********************************************************
+x      = calcDayAnomTLL(x_sel2, yyyyddd, hClmDay)
 
-copy_VarMeta(x_sel,x)
+
+; delete(x)
+; x      = x_sel - xavg
+
+copy_VarMeta(x_sel2,x)
 ; delete(x_sel)
 ; delete(x_seas)
 

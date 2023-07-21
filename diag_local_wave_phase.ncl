@@ -4,6 +4,73 @@ load "wave_phase_background.ncl"
 load "utils.ncl"
 
 
+
+; undef("hann")
+; function hann(x,N) ;x = lon, c=central longitude, N=longitude window length
+; 	begin
+;
+; 	N2 = N/2
+; 	c = (N+1)/2
+;
+; 	xW = x(c-N2:c+N2)
+; 	L  = dimsizes(xW)
+;
+; 	pi = get_pi("float")
+;
+; 	it = x
+; 	print(it)
+; 	w  = new((/dimsizes(x)/), "float")
+; 	w = 0
+; 	print(w)
+;
+; 	counter = 0
+; 		do t = it, L+it-1
+; 			rad = xW(counter)/L
+; 			w(t) = 0.5 * (1 - cos(2*pi*rad))
+; 			counter = counter+1
+; 		end do
+;
+; 	copy_VarCoords(x,w)
+; 	w@long_name = "hanning weights"
+; 	return w
+; 	end
+
+
+undef("hann_lon")
+function hann_lon(x,c,N) ;x = lon, c=central longitude, N=longitude window length
+	begin
+
+	N2 = N/2
+	; L  = dimsizes(x)
+
+	x!0 = "lon"
+	x&lon = x
+	; print(lonL)
+	printVarSummary(x)
+
+	xW = x({c-N2:c+N2})
+	L  = dimsizes(xW)
+
+	pi = get_pi("float")
+
+	it = ind(x({c-N2}).eq.x)
+	print(it)
+	w  = new((/dimsizes(x)/), "float")
+	w = 0
+	print(w)
+
+	counter = 0
+		do t = it, L+it-1
+			rad = xW(counter)/L
+			w(t) = 0.5 * (1 - cos(2*pi*rad))
+			counter = counter+1
+		end do
+
+	copy_VarCoords(x,w)
+	w@long_name = "hanning weights"
+	return w
+	end
+
 undef("local_phase_diag")
 
 procedure local_phase_diag(dir,figdir,fname, wave_name,date_start,date_end,seas,central_lon,NC,PLOT, opt)
@@ -365,13 +432,22 @@ begin
 
 	date_ind = cd_calendar(temp&time,-2)
 	; printVarSummary(date_ind)
-	ind_active = new((/dimsizes(ind_temp)/),"integer")
+	ind_active = new((/dimsizes(ind_temp)/),"integer", default_fillvalue("integer"))
 
 	do j = 0, dimsizes(date_ind)-1
 		do k=0, dimsizes(ftc)-1
 			ind_active(j)     = ind(data_date.eq.date_ind(j) .and. data_date.ne.ftc(k))
 		end do
 	end do
+	;
+	; do j = 0, dimsizes(date_ind)-1
+	; 	ind_active(j)     = ind(data_date.eq.date_ind(j))
+	; end do
+	;
+	;
+	; do k = 0, dimsizes(ftc)-1
+	; 	ind2 = ind(data_date.ne.ftc(k)); write loop content
+	; end do
 
 	igood = ind(.not.ismissing(ind_active))
 	xgood = ind_active(igood)
@@ -565,6 +641,175 @@ do i = 0, ni-1
 end do
 
 copy_VarCoords(x(0,:,:),result(:,:) )
+copy_VarAtts(x, result)
+return (result)
+end
+
+
+undef("composite_waves_4D")
+function composite_waves_4D(x,phase, amp, season)
+local x_wave, alpha, boots, ymdhms, x_seas, ind_active, ndim
+	begin
+
+		ymdhms = cd_calendar(x&time, 0)
+		iseason = choose_season(season, ymdhms)
+
+		x_seas     = x(iseason,:,:,:)
+		print(cd_calendar(x_seas&time,-2))
+		phase_seas = phase
+		; print(phase_seas)
+
+		delete(ymdhms)
+		delete(iseason)
+
+		printVarSummary(x_seas)
+
+		ymdhms = cd_calendar(amp&time, 0)
+		iseason = choose_season(season, ymdhms)
+
+		amp_seas   = amp
+		printVarSummary(amp_seas)
+
+		delete(ymdhms)
+		delete(iseason)
+
+		ndim = dimsizes(x_seas)
+		x_wave = new((/9, ndim(1), ndim(2),ndim(3)/), "float")
+		x_wave@ndays = new((/9/),"integer")
+
+		TIME = cd_calendar(x_seas&time, -2)
+
+		do i = 0, 8
+
+			ind_temp 			 = ind(phase_seas.eq.i)
+			temp 					 = amp_seas(ind_temp)
+			; print(temp)
+			; print(phase_seas(ind_temp))
+
+			; print(TIME)
+			; printVarSummary(TIME)
+
+			date_ind = cd_calendar(temp&time,-2)
+			; printVarSummary(date_ind)
+			ind_active = new((/dimsizes(date_ind)/),"integer")
+			; print(date_ind)
+
+
+			do j = 0, dimsizes(date_ind)-1
+				ind_active(j)     = ind(TIME.eq.date_ind(j))
+				; print(date_ind(j))
+				; print(ind(TIME.eq.date_ind(j)))
+				; print(TIME(ind_active(j)))
+				; print(ind_active(i))
+			end do
+
+			x_wave(i, :,:, :) = dim_avg_n_Wrap(x_seas(ind_active,:,:,:), 0)
+			;
+			x_wave@ndays(i) = num(ind_active)
+			delete(ind_active)
+			delete(date_ind)
+			delete(temp)
+			delete(ind_temp)
+			copy_VarCoords(x_seas(0,:,:,:), x_wave(0,:,:,:))
+
+		end do
+
+		x_wave!0 = "phase"
+		x_wave&phase = (/0,1,2,3,4,5,6,7,8/)
+		; x_wave@units = x_seas@units
+		x_wave@long_name = "composite for waves"
+
+		return(x_wave)
+	end
+
+undef("stat_dispersion_3D")
+function stat_dispersion_3D(x, perc)
+local opt, i, j, ndim, ni, nj, temp
+
+begin
+ndim = dimsizes(x)
+ni = ndim(1)
+nj = ndim(2)
+
+if (perc).eq.50 then
+	nstat = 8
+else if (perc).eq.95 then
+	nstat = 25
+else if perc.eq.99 then
+	nstat = 26
+else if perc.eq.5 then
+	nstat = 24
+else if perc.eq.1 then
+	nstat = 23
+else if perc.eq."mean" then
+	nstat = 0
+end if
+end if
+end if
+end if
+end if
+end if
+
+result = new((/ni, nj/), "float")
+
+do i = 0, ni-1
+	do j = 0, nj-1
+		temp = stat_dispersion(x(:,i,j), False)
+		print("med-eq="+temp(nstat))
+		result(i,j) = temp(nstat)
+		delete(temp)
+	end do
+end do
+
+copy_VarCoords(x(0,:,:),result(:,:) )
+copy_VarAtts(x, result)
+return (result)
+end
+
+
+undef("stat_dispersion_4D")
+function stat_dispersion_4D(x, perc)
+local opt, i, j, ndim, ni, nj,nlev, temp
+
+begin
+ndim = dimsizes(x)
+nlev = ndim(1)
+ni   = ndim(2)
+nj   = ndim(3)
+
+if (perc).eq.50 then
+	nstat = 8
+else if (perc).eq.95 then
+	nstat = 25
+else if perc.eq.99 then
+	nstat = 26
+else if perc.eq.5 then
+	nstat = 24
+else if perc.eq.1 then
+	nstat = 23
+else if perc.eq."mean" then
+	nstat = 0
+end if
+end if
+end if
+end if
+end if
+end if
+
+result = new((/nl, ni, nj/), "float")
+
+do i = 0, ni-1
+	do l=0, nlev-1
+		do j = 0, nj-1
+			temp = stat_dispersion(x(:,l,i,j), False)
+			print("med-eq="+temp(nstat))
+			result(l,i,j) = temp(nstat)
+			delete(temp)
+		end do
+	end do
+end do
+
+copy_VarCoords(x(0,:,:,:),result(:,:,:) )
 copy_VarAtts(x, result)
 return (result)
 end

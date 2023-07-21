@@ -6,14 +6,16 @@ diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/dynamics/"
 
 waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
 ; thresh = 1
-minlv = -10.
-maxlv = 10.
-intlv = 86400.
+minlv = -25.
+maxlv = 25.
+intlv = 5.
+; scale = 86400./1000.
 
 seas = "SHSummer"
 
 ; fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"mvimd.daily.regrid.1980-2019.nc"
-fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"VIMFC_ERA5_1980-2018.nc"
+; fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"VIMFC_ERA5_1980-2018.nc"
+fname    = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"+"VIMFC_ERA5_1980-2018.daysub.nc"
 h = addfile(fname,"r")
 ; xraw = h->mvimd
 xraw = h->vimfc
@@ -122,7 +124,7 @@ n      = 8
 
   res@mpFillOn            = False
   res@mpMaxLatF           = -5
-  res@mpMinLatF           = -25
+  res@mpMinLatF           = -20
 
   res@mpMaxLonF           = 170
   res@mpMinLonF           = 90

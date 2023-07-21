@@ -6,14 +6,14 @@ diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/dynamics/"
 
 waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
 ; thresh = 1
-minlv = -5.
-maxlv = 5.
-intlv = .5
-scale = 86400;./1000.
+minlv = -10.
+maxlv = 10.
+intlv = 1.
+scale = 86400./1000.
 
 seas = "SHSummer"
 
-type = "fromera.dailyanom"
+type = "makeown.anom30"
 ; remaptype =  "regrid"
 
 do k =0, dimsizes(waves)-1
@@ -54,7 +54,7 @@ replace_ieeenan(a, default_fillvalue("float"), 0)
 ndim = dimsizes(x_in)
 ; xseas = conform_dims(ndim, xavg, (/1,2/))
 
-x     = where(a.eq.1., x_in*scale, x_in@_FillValue)
+x     = where(a.ge.0., x_in*scale, x_in@_FillValue)
 copy_VarMeta(x_in, x)
 printVarSummary(x)
 
@@ -68,6 +68,7 @@ n      = 8
     wks = gsn_open_wks("png",diro+"dyn_anom_comp_dailyanom_"+wave+"_"+seas+"ref"+ref+"."+type)              ; send graphics to PNG file
 
   cmap  = read_colormap_file("NCV_blu_red")
+  cmap = cmap(::-1,:)
   cmap(9:10,:) = 0
 
   ; cmap(12:13,:) = 0
@@ -155,7 +156,7 @@ n      = 8
   res2@gsnContourNegLineDashPattern = 2
   res2@gsnContourZeroLineThicknessF = 2.5
 
-  x_con = x_in*scale
+  x_con = x
   copy_VarCoords(x_in,x_con)
 
   do g = 0, 7

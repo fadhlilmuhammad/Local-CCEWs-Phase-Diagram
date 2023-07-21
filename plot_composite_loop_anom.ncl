@@ -9,14 +9,14 @@ minlv = -5.
 maxlv = 5.
 intlv = 0.5
 
-remaptype =  "regrid"
+remaptype =  "025_dailyanom"
 
 do k =0, dimsizes(waves)-1
   ; write loop content
 
 wave = waves(k)
 seas = "SHSummer"
-ref = 143
+ref = 133
 
 if seas.eq."SHSummer" then
   seasmon = "DJF"
@@ -73,10 +73,10 @@ n      = 8
 
   res@mpFillOn            = True
   res@mpMaxLatF           = -10
-  res@mpMinLatF           = -20
+  res@mpMinLatF           = -25
 
-  res@mpMaxLonF           = 150
-  res@mpMinLonF           = 118
+  res@mpMaxLonF           = 155
+  res@mpMinLonF           = 112
 
 
   ;---Set resources for better map outlines

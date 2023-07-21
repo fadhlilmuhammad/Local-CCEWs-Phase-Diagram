@@ -10,8 +10,6 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 ; type = "dailyanom"
 type = "seasanom"
-; var = "mvimd_anom_sm"
-; var = "vimfc_anom"
 var = "mvimd_anom"
 data = "fromera"
 
@@ -28,6 +26,51 @@ startwave = 0
 
 f        = addfile(diro+"dynamics/"+fname, "r")
 vimfc    = f->$var$
+
+
+;***********************************************************
+; Read time and create required yyyyddd
+;***********************************************************
+   time    = vimfc&time                          ; time:units = "hours since 1-1-1 00:00:0.0"
+   TIME    = cd_calendar(time, 0)          ; type float
+   year    = toint( TIME(:,0) )
+   month   = toint( TIME(:,1) )
+   day     = toint( TIME(:,2) )
+   ddd     = day_of_year(year, month, day)
+   yyyyddd = year*1000 + ddd
+
+;calc anom
+
+;***********************************************************
+; Compute daily climatology: raw and then 'smoothed'
+;***********************************************************
+   hClmDay    = clmDayTLL(vimfc, yyyyddd)     ; daily climatology at each grid point
+   printVarSummary(hClmDay)
+;***********************************************************
+; Compute smoothed daily climatology using 2 harmonics
+;***********************************************************
+   hClmDay_sm = runave_n_Wrap(hClmDay,30, 0, 0)
+   printVarSummary(hClmDay_sm)
+
+;***********************************************************
+; Compute daily anomalies using raw and smoothed daily climatologies
+;***********************************************************
+    vimfc_Anom      = calcDayAnomTLL (vimfc, yyyyddd, hClmDay)
+    printVarSummary(hAnom_sm)
+    printMinMax(hAnom, 0)
+
+    vimfc_Anom_sm   = calcDayAnomTLL (vimfc, yyyyddd, hClmDay_sm)
+
+    hAnom_sm@long_name = "Anomalies from Smooth Daily Climatology"
+    printVarSummary(hAnom_sm)
+    printMinMax(hAnom_sm, 0)
+
+delete(vimfc)
+vimfc = vimfc_Anom_sm
+
+delete(time)
+delete(TIME)
+delete(yyyyddd)
 
 
 do k = startwave, dimsizes(waves)-1

@@ -35,12 +35,13 @@ ylast    = 2018
 
 ref = 133
 wave     = waves(k)
-season   = "SHAutumn"
+season   = "SHSummer"
 f        = addfile(diri+foutname, "r")
-g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
+g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".noTC.nc", "r")
 
 
 ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
+print(ftc)
 
 amp_in   = g->amp
 printVarSummary(amp_in)
@@ -130,16 +131,18 @@ do i = 0, 7
   print("phase-"+(i+1))
   nphase  = i+1
   date_phase        = cd_calendar(x_freq&time, -2)
-  indactive         = lookup_phase_index_rmvtc(phase_seas,amp, date_phase, nphase,ftc )
+  ; indactive         = lookup_phase_index_rmvtc(phase_seas,amp, date_phase, nphase,ftc )
+  indactive         = lookup_phase_index(phase_seas,amp, date_phase, nphase )
   printVarSummary(indactive)
+  print(indactive)
   ; print(indactive)
-  print(num(indactive))
+  print(num(.not.ismissing(indactive)))
   ; comp@ndays(i+1)   = num(indactive)
   xphase            = x_freq(indactive,:,:)
 
   ; pall     =
-  nBoot = 1000
-  sigval = 90
+  nBoot = 100
+  sigval = 95
   optboot   = True
   optboot@sample_method = 1
   optboot@sample_size = dimsizes(indactive)

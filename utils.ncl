@@ -366,6 +366,121 @@ begin
   return( retVal )
 end
 
+undef("coast_get")
+function coast_get (x[*][*][*]:numeric,face[*]:numeric,ncoast[*]:numeric)
+
+; face=3 is south to north: south is ocean
+; face=2 is north to south: north is ocean
+; face=1 is east to west: east is ocean
+; face=0 is west to east: west is ocean
+
+  begin
+
+
+  time = x&time
+  lons = x&lon
+  lats = x&lat
+
+  ntime = dimsizes(time)
+  nlats = dimsizes(lats)
+  nlons = dimsizes(lons)
+
+  icoast = new((/ntime, nlats,nlons/), "float")
+
+    if (face.eq.2.or.face.eq.3) then
+
+      if face.eq.2 then
+        if lats(0).lt.lats(dimsizes(lats)-1) then
+          print("Latitude from south to north, changing it to north to south")
+          x = x(:,::-1,:)
+          lats = x&lat
+        else
+          print("Latitude already from north to south, go on...")
+        end if
+      else if face.eq.3 then
+        if lats(0).gt.lats(dimsizes(lats)-1) then
+          print("Latitude from north to south, changing it to south to north")
+          x = x(:,::-1,:)
+          lats = x&lat
+        else
+          print("Latitude already from south to north, go on...")
+        end if
+      end if
+      end if
+      ; print(lats)
+
+
+        do i = 0, dimsizes(lons)-1
+          do j = 0, dimsizes(lats)-1
+            if any(.not.ismissing(x(:,j,i))) then
+
+                do ninit = 0, ncoast-1
+                  icoast(:,j+ninit,i) = 1.
+                end do
+
+              break
+            end if
+          end do
+        end do
+
+      outcoast = where(icoast.eq.1, x(:,:,:), x@_FillValue)
+      copy_VarMeta(x(:,:,:), outcoast)
+
+      return(outcoast)
+
+    else if (face.eq.0.or.face.eq.1) then
+
+      if face.eq.0 then
+        if lons(0).gt.lons(dimsizes(lons)-1) then
+          print("Longitude from east to west, changing it to west to east")
+          x = x(:,:,:)
+          lons = x&lon
+        else
+          print("Longitude already from west to east, go on...")
+        end if
+      else if face.eq.1 then
+        if lons(0).lt.lons(dimsizes(lons)-1) then
+          print("Longitude from west to east, changing it to east to west")
+          x = x(:,:,:)
+          lons = x&lon
+          print(lons)
+        else
+          print("Longitude already from east to west, go on...")
+        end if
+      end if
+      end if
+      ; print(lats)
+
+
+        do j = 0, dimsizes(lats)-1
+          do i = 0, dimsizes(lons)-1
+            if any(.not.ismissing(x(:,j,i))) then
+
+              do ninit = 0, ncoast-1
+                icoast(:,j,i+ninit) = 1.
+              end do
+
+              break
+            end if
+          end do
+        end do
+
+      outcoast = where(icoast.eq.1, x(:,:,:), x@_FillValue)
+      copy_VarMeta(x(:,:,:), outcoast)
+
+      return(outcoast)
+
+
+    end if
+    end if
+
+
+
+
+  end
+
+
+
 ; ----------------------------------------------------------
 ; Adam Phillips
 ;

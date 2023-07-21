@@ -6,13 +6,15 @@ diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 ; fname    = "VIMFC_ERA5_MAKEOWN_1980-2019.nc"
-fname = "vimfc.day.anomalies.1980-2019.nc"
+fname    = "VIMFC_ERA5_MAKEOWN_1980-2019.daysub.nc"
+; fname = "vimfc.day.anomalies.1980-2019.nc"
 ; fname = "mvimd.day.anomalies.1980-2019.nc"
 f        = addfile(diri+fname, "r")
 
-type = "makeown.dailyanom"
+; type = "makeown.raw"
+type = "makeown.dailyanom-smooth"
 ; var = "mvimd_anom_sm"
-var = "vimfc_anom_sm"
+var = "vimfc"
 vimfc    = f->$var$
 
 waves = (/ "er","kelvin", "mrg", "td", "mjo"/)
@@ -76,8 +78,8 @@ do k = startwave, dimsizes(waves)-1
 
 
   vimfc_seaschoose     = vimfc(indchoose,:,:)
-  nlat        = dimsizes(vimfc_seaschoose&lat)
-  nlon        = dimsizes(vimfc_seaschoose&lon)
+  nlat        = dimsizes(vimfc_seaschoose&latitude)
+  nlon        = dimsizes(vimfc_seaschoose&longitude)
   print(cd_calendar(vimfc_seaschoose&time,-2))
   printVarSummary(vimfc_seaschoose)
 

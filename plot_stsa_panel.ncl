@@ -18,7 +18,7 @@ copy_VarCoords(coord,x)
 copy_VarAtts(coord,x)
 
 
-nseas = 2
+nseas = 4
 ndim  = dimsizes(coord)
 printVarSummary(ndim)
 
