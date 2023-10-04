@@ -5,7 +5,7 @@ diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/olr_filtered/"
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/olr_filtered/"
 seas = "SHAutumn"
 
-waves = (/"er","kelvin","mrg","td"/)
+waves = (/"er","mjo","mrg","td"/)
 
 x    = new((/4,12,21/), "float")
 ndim = dimsizes(x)
@@ -44,14 +44,14 @@ printMinMax(x,0)
 ;==============================================
 ; create color plot
 ;=============================================
-  wks  = gsn_open_wks ("png", diro+"wave_lonactivity_panel" )           ; send graphics to PNG file
+  wks  = gsn_open_wks ("pdf", diro+"wave_lonactivity_panel" )           ; send graphics to PNG file
 
   res                      = True               ; plot mods desired
   res@cnFillOn             = True               ; turn on color fill
   res@gsnDraw = False
   res@gsnFrame = False
-  res@cnFillPalette        = "CBR_wet"           ; set color map
-  res@cnLinesOn            = True
+  res@cnFillPalette        = "WhiteYellowOrangeRed"           ; set color map
+  res@cnLinesOn            = False
   ; res@gsnContourZeroLineThicknessF = 3.5        ; sets thickness of zero contour to 3.5 (default=1)
   res@gsnMajorLonSpacing   = 2.
   ; res@gsnMajorLatSpacing   = 2.
@@ -67,8 +67,6 @@ printMinMax(x,0)
 
   res@gsnLeftString        = ""
 
-  res@gsnRightString       = "[OLR variance]"
-
 
   res@tmYLMode           = "Explicit"         ; Define own tick mark labels.
   ; res@tmYLMinorValues    = major_ticks(0:ndays-1:6)
@@ -81,22 +79,23 @@ printMinMax(x,0)
 
   do i = 0, ndim(0)-1
 
-    wave = waves(i)
-    if (wave.eq."er").or.(wave.eq."td") then
-    res@cnLevelSelectionMode = "ManualLevels"     ; manual contour levels
-    res@cnMinLevelValF       = 0.	        ; min level
-    res@cnMaxLevelValF       =  3.               ; max level
-    res@cnLevelSpacingF      = 0.2                 ; contour level spacing
-    else
-    res@cnLevelSelectionMode = "ManualLevels"     ; manual contour levels
-    res@cnMinLevelValF       = 0.	        ; min level
-    res@cnMaxLevelValF       =  3.               ; max level
-    res@cnLevelSpacingF      = 0.2                 ; contour level spacing
-    end if
+      wave = waves(i)
+      res@gsnRightString       = "[(OLR~B~"+str_upper(wave)+"~N~)/ (AVG OLR~B~"+str_upper(wave)+"-each latitude~N~)  ]"
+      if (wave.eq."er").or.(wave.eq."td") then
+      res@cnLevelSelectionMode = "ManualLevels"     ; manual contour levels
+      res@cnMinLevelValF       = 1.	        ; min level
+      res@cnMaxLevelValF       =  3.               ; max level
+      res@cnLevelSpacingF      = 0.1                 ; contour level spacing
+      else
+      res@cnLevelSelectionMode = "ManualLevels"     ; manual contour levels
+      res@cnMinLevelValF       = 1.	        ; min level
+      res@cnMaxLevelValF       =  3.               ; max level
+      res@cnLevelSpacingF      = 0.1                 ; contour level spacing
+      end if
 
 
     if x&wave(i).ne."kelvin" then
-    plots(i) = gsn_csm_hov(wks, x(i,:,{-20:-10}), res)
+    plots(i) = gsn_csm_hov(wks, x(i,:,{-25:-10}), res)
     else
     plots(i) = gsn_csm_hov(wks, x(i,:,{-15:-10}), res)
     end if
@@ -117,13 +116,13 @@ printMinMax(x,0)
   resP@gsnFrame         = False                  ; don't advance panel plot
   resP@gsnPanelLabelBar = True                  ; add common colorbar
   resP@gsnPanelBottom   = 0.05                   ; add space at bottom
-  resP@gsnPanelFigureStrings= (/"A) ER waves","B) Kelvin waves","C) MRG waves","D) TD-type waves"/) ; add strings to panel
+  resP@gsnPanelFigureStrings= (/"A) ER waves","B) MJO","C) MRG waves","D) TD-type waves"/) ; add strings to panel
   resP@amJust   = "TopLeft"
   resP@lbLabelStride        = 2
   ; resP@lbTitleString  = "[mm/day]"
   ; resP@lbTitlePosition = "bottom"
-  resP@lbTopMarginF    = 0.4
-  resP@lbBottomMarginF = 0.005
+  resP@lbTopMarginF    = -0.1
+  resP@lbBottomMarginF = 0.38
   resP@lbTitleFontHeightF = 0.01
 
   ; resP@gsnPanelMainPosXF  = 0.2

@@ -601,6 +601,156 @@ local x_wave, alpha, boots, ymdhms, x_seas, ind_active, ndim
 		return(x_wave)
 	end
 
+
+
+	undef("composite_waves_wetdays")
+	function composite_waves_wetdays(x,phase, amp, season)
+	local x_wave, alpha, boots, ymdhms, x_seas, ind_active, ndim
+		begin
+
+			ymdhms = cd_calendar(x&time, 0)
+			iseason = choose_season(season, ymdhms)
+
+			x_seas     = x(iseason,:,:)
+			print(cd_calendar(x_seas&time,-2))
+			phase_seas = phase
+			; print(phase_seas)
+
+			delete(ymdhms)
+			delete(iseason)
+
+			printVarSummary(x_seas)
+
+			ymdhms = cd_calendar(amp&time, 0)
+			iseason = choose_season(season, ymdhms)
+
+			amp_seas   = amp
+			printVarSummary(amp_seas)
+
+			delete(ymdhms)
+			delete(iseason)
+
+			ndim = dimsizes(x_seas)
+			x_wave = new((/9, ndim(1), ndim(2)/), "float")
+			x_wave@ndays = new((/9/),"integer")
+
+			TIME = cd_calendar(x_seas&time, -2)
+
+			do i = 0, 8
+
+				ind_temp 			 = ind(phase_seas.eq.i)
+				temp 					 = amp_seas(ind_temp)
+				; print(temp)
+				; print(phase_seas(ind_temp))
+
+				; print(TIME)
+				; printVarSummary(TIME)
+
+				date_ind = cd_calendar(temp&time,-2)
+				; printVarSummary(date_ind)
+				ind_active = new((/dimsizes(date_ind)/),"integer")
+				; print(date_ind)
+
+
+				do j = 0, dimsizes(date_ind)-1
+					ind_active(j)     = ind(TIME.eq.date_ind(j))
+					; print(date_ind(j))
+					; print(ind(TIME.eq.date_ind(j)))
+					; print(TIME(ind_active(j)))
+					; print(ind_active(i))
+				end do
+
+				x_wave(i, :, :) = dim_sum_n_Wrap(x_seas(ind_active,:,:), 0)
+				;
+				x_wave@ndays(i) = num(ind_active)
+				delete(ind_active)
+				delete(date_ind)
+				delete(temp)
+				delete(ind_temp)
+				copy_VarCoords(x_seas(0,:,:), x_wave(0,:,:))
+
+			end do
+
+			x_wave!0 = "phase"
+			x_wave&phase = (/0,1,2,3,4,5,6,7,8/)
+			; x_wave@units = x_seas@units
+			x_wave@long_name = "composite for waves"
+
+			return(x_wave)
+		end
+
+
+	undef("composite_waves_1D")
+	function composite_waves_1D(x,phase, amp, season)
+	local x_wave, alpha, boots, ymdhms, x_seas, ind_active, ndim
+		begin
+
+			ymdhms = cd_calendar(x&time, 0)
+			iseason = choose_season(season, ymdhms)
+
+			x_seas     = x(iseason)
+			print(cd_calendar(x_seas&time,-2))
+			phase_seas = phase
+			; print(phase_seas)
+
+			delete(ymdhms)
+			delete(iseason)
+
+			printVarSummary(x_seas)
+
+			ymdhms = cd_calendar(amp&time, 0)
+			iseason = choose_season(season, ymdhms)
+
+			amp_seas   = amp
+			printVarSummary(amp_seas)
+
+			delete(ymdhms)
+			delete(iseason)
+
+			ndim = dimsizes(x_seas)
+			x_wave = new((/9/), "float")
+			x_wave@ndays = new((/9/),"integer")
+
+			TIME = cd_calendar(x_seas&time, -2)
+
+			do i = 0, 8
+
+				ind_temp 			 = ind(phase_seas.eq.i)
+				temp 					 = amp_seas(ind_temp)
+				date_ind = cd_calendar(temp&time,-2)
+				; printVarSummary(date_ind)
+				ind_active = new((/dimsizes(date_ind)/),"integer")
+				; print(date_ind)
+
+
+				do j = 0, dimsizes(date_ind)-1
+					ind_active(j)     = ind(TIME.eq.date_ind(j))
+					; print(date_ind(j))
+					; print(ind(TIME.eq.date_ind(j)))
+					; print(TIME(ind_active(j)))
+					; print(ind_active(i))
+				end do
+
+				x_wave(i) = dim_avg_n_Wrap(x_seas(ind_active), 0)
+				;
+				x_wave@ndays(i) = num(ind_active)
+				delete(ind_active)
+				delete(date_ind)
+				delete(temp)
+				delete(ind_temp)
+				; copy_VarCoords(x_seas(0), x_wave(0,:,:))
+
+			end do
+
+			x_wave!0 = "phase"
+			x_wave&phase = (/0,1,2,3,4,5,6,7,8/)
+			; x_wave@units = x_seas@units
+			x_wave@long_name = "composite for waves"
+
+			return(x_wave)
+		end
+
+
 undef("stat_dispersion_3D")
 function stat_dispersion_3D(x, perc)
 local opt, i, j, ndim, ni, nj, temp
@@ -634,7 +784,7 @@ result = new((/ni, nj/), "float")
 do i = 0, ni-1
 	do j = 0, nj-1
 		temp = stat_dispersion(x(:,i,j), False)
-		print("med-eq="+temp(nstat))
+		; print("med-eq="+temp(nstat))
 		result(i,j) = temp(nstat)
 		delete(temp)
 	end do
@@ -755,7 +905,7 @@ result = new((/ni, nj/), "float")
 do i = 0, ni-1
 	do j = 0, nj-1
 		temp = stat_dispersion(x(:,i,j), False)
-		print("med-eq="+temp(nstat))
+		; print("med-eq="+temp(nstat))
 		result(i,j) = temp(nstat)
 		delete(temp)
 	end do

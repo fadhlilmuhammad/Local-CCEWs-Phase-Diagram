@@ -1,0 +1,100 @@
+ Copyright (C) 1995-2019 - All Rights Reserved
+ University Corporation for Atmospheric Research
+ NCAR Command Language Version 6.6.2
+ The use of this software is governed by a License Agreement.
+ See http://www.ncl.ucar.edu/ for more details.
+
+
+Variable: csv
+Type: integer
+Total Size: 16 bytes
+            4 values
+Number of Dimensions: 1
+Dimensions and sizes:	[4]
+Coordinates: 
+Number Of Attributes: 1
+  _FillValue :	-2147483647
+(0)	19890211
+(1)	20040212
+(2)	20081209
+(3)	20110212
+(0)	short2flt: input variable is already type float: Daily precipitation
+(0)	short2flt: no conversion performed
+
+Variable: th
+Type: float
+Total Size: 2604 bytes
+            651 values
+Number of Dimensions: 2
+Dimensions and sizes:	[lat | 31] x [lon | 21]
+Coordinates: 
+            lat: [-23.5..-16]
+            lon: [146..151]
+Number Of Attributes: 13
+  _FillValue :	1e+20
+  grid_mapping :	spatial_ref
+  coverage_content_type :	physicalMeasurement
+  length_scale_for_analysis :	  80
+  frequency :	daily
+  number_of_stations_reporting :	6600
+  analysis_version_number :	3.01
+  cell_methods :	time: sum
+  units :	mm
+  long_name :	Daily precipitation
+  standard_name :	lwe_thickness_of_precipitation_amount
+  least_significant_digit :	3
+  missing_value :	1e+20
+
+
+Variable: unnamed (return)
+Type: float
+Total Size: 4 bytes
+            1 values
+Number of Dimensions: 1
+Dimensions and sizes:	[1]
+Coordinates: 
+Number Of Attributes: 15
+  _FillValue :	1e+20
+  least_significant_digit :	3
+  standard_name :	lwe_thickness_of_precipitation_amount
+  long_name :	Daily precipitation
+  units :	mm
+  cell_methods :	time: sum
+  analysis_version_number :	3.01
+  number_of_stations_reporting :	6600
+  frequency :	daily
+  length_scale_for_analysis :	  80
+  coverage_content_type :	physicalMeasurement
+  grid_mapping :	spatial_ref
+  wgt_areaave_op_ncl :	Area Average
+  missing_value :	1e+20
+  average_op_ncl :	dim_avg over dimension(s): time
+(0)	0.25
+
+
+Variable: prcp_aave_seas
+Type: float
+Total Size: 4 bytes
+            1 values
+Number of Dimensions: 1
+Dimensions and sizes:	[1]
+Coordinates: 
+Number Of Attributes: 15
+  _FillValue :	1e+20
+  least_significant_digit :	3
+  standard_name :	lwe_thickness_of_precipitation_amount
+  long_name :	Daily precipitation
+  units :	mm
+  cell_methods :	time: sum
+  analysis_version_number :	3.01
+  number_of_stations_reporting :	6600
+  frequency :	daily
+  length_scale_for_analysis :	  80
+  coverage_content_type :	physicalMeasurement
+  grid_mapping :	spatial_ref
+  wgt_areaave_op_ncl :	Area Average
+  missing_value :	1e+20
+  average_op_ncl :	dim_avg_n over dimension(s): time
+(0)	0.04993342
+(0)	4
+(0)	mrg_td_only 5.00667

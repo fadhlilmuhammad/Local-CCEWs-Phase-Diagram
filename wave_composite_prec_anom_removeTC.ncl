@@ -5,21 +5,23 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 
 
 
-waves = (/"er","kelvin","mrg","td"/)
-; waves = (/"mjo","mrg","td"/)
+waves = (/"er","kelvin","mrg","td","mjo"/)
+; waves = (/"mjo"/)
 
-remaptype = "regrid"
+remaptype = "shift1day"
+type = "dailyanom"
 
 startwave = 0
 do k = startwave, dimsizes(waves)-1
 wave = waves(k)
 ; foutname = "rr_sacad_clean_AU.nc"
-foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
+; foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
+foutname = "agcd_v1_precip_calib_r025_daily_1981-2020.maskedshp."+remaptype+".nc"
 
 
 print(str_upper(wave))
 ref = 133
-seas = "SHSummer"
+seas = "SHAutumn"
 ystrt    = 1981
 ylast    = 2018
 
@@ -79,28 +81,36 @@ x_sel2 = x_in(iStrt:iLast,:,:)
 ; print(cd_calendar(x_sel&time,-2))
 x_seas = dim_avg_n(x_sel2(iseason,:,:),0)
 ; x = x_in
-xavg = conform_dims(dimsizes(x_sel2), x_seas, (/1,2/))
+xavg = conform_dims(dimsizes(x_sel2(iseason,:,:)), x_seas, (/1,2/))
 printVarSummary(xavg)
 printVarSummary(x_sel2)
 
 ;***********************************************************
 ; Compute daily climatology: raw and then 'smoothed'
 ;***********************************************************
-x_rave = runave_n_Wrap(x_sel2,30,0,0)
-hClmDay    = clmDayTLL(x_rave, yyyyddd)     ; daily climatology at each grid point
+; x_rave = runave_n_Wrap(x_sel2,30,0,0)
+hClmDay    = clmDayTLL(x_sel2, yyyyddd)     ; daily climatology at each grid point
 printVarSummary(hClmDay)
 
 delete(x)
 ;***********************************************************
 ; Compute daily anomalies using raw and smoothed daily climatologies
 ;***********************************************************
+
+if type.eq."dailyanom" then
 x      = calcDayAnomTLL(x_sel2, yyyyddd, hClmDay)
+copy_VarMeta(x_sel2,x)
+else if type.eq."seasanom" then
+x      = x_sel2(iseason,:,:) - xavg
+copy_VarMeta(x_sel2(iseason,:,:),x)
+end if
+end if
+
 
 
 ; delete(x)
 ; x      = x_sel - xavg
 
-copy_VarMeta(x_sel2,x)
 ; delete(x_sel)
 ; delete(x_seas)
 
@@ -130,7 +140,7 @@ do i = 0, 7
 
   ; pall     =
   nBoot = 1000
-  sigval = 90
+  sigval = 95
   optboot   = True
   optboot@sample_method = 1
   optboot@sample_size = dimsizes(indactive)
@@ -175,7 +185,7 @@ delete(x_in)
 delete(x)
 printVarSummary(comp)
 
-foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+"."+remaptype+".nc"
+foutname = "prec_anom_"+wave+"_wave_composite_"+seas+"ref"+ref+"."+remaptype+"."+type+".nc"
 system("rm "+diro+"precip/"+foutname)
 
 fout = addfile(diro+"precip/"+foutname,"c")

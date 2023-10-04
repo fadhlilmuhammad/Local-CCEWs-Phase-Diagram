@@ -1,6 +1,7 @@
 
 ; load('$NCARG_ROOT/lib/ncarg/database/rangs')
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/precip/"
+; diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/precip/gadi/"
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/precip/"
 
 waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
@@ -9,13 +10,16 @@ minlv = 0.
 maxlv = 2.
 intlv = .1
 
-remaptype =  "025"
+;remaptype =  "025"
+; remaptype =  "check_wTC"
+remaptype =  "shift1day"
+
 
 do k =0, dimsizes(waves)-1
   ; write loop content
 
 wave = waves(k)
-seas = "SHSummer"
+seas = "SHAutumn"
 ref = 133
 
 if seas.eq."SHSummer" then
@@ -32,8 +36,12 @@ end if
 end if
 end if
 end if
+; mjo_wave_composite_SHSummer_perc95_025_sig95.ref133.check_wTC.nc
+; fname = wave+"_wave_composite_"+seas+"_perc95_025_sig95.ref"+ref+".regrid.nc"
+; fname = wave+"_wave_composite_"+seas+"_perc95_025_sig95.ref"+ref+".check_wTC.nc"
 
-fname = wave+"_wave_composite_"+seas+"_perc95_025_sig95.ref"+ref+".regrid.nc"
+perc = 90
+fname = wave+"_wave_composite_"+seas+"_perc"+perc+"_025_sig95.ref"+ref+".shift1day.nc"
 ; fname = "er_wave_composite_SHSummer_perc95_025_sig95.ref133.regrid.nc"
 ; fname = wave+"_wave_composite_"+seas+"ref"+ref+"."+remaptype+".nc"
 ; fname = "olr_er_wave_composite.nc"
@@ -43,19 +51,22 @@ x_in  = short2flt(f->composite_anom)
 a     = short2flt(f->alpha)
 x     = where(a.eq.1., x_in, x_in@_FillValue)
 copy_VarMeta(x_in, x)
+; x_in   = where(x_in.gt.0., x_in, x_in@_FillValue)
+copy_VarMeta(x, x_in)
+
 printVarSummary(x)
 
 n      = 8
 ;************************************************
 ; create plots
 ;************************************************
-  wks = gsn_open_wks("png",diro+"rain_extreme_comp_"+wave+"_"+seas+"ref"+ref+"_"+remaptype)              ; send graphics to PNG file
+  wks = gsn_open_wks("pdf",diro+"rain_extreme_comp_"+perc+wave+"_"+seas+"ref"+ref+"_"+remaptype)              ; send graphics to PNG file
 
-  cmap  = read_colormap_file("sunshine_diff_12lev")
-  cmap  = cmap(::-1,:)
-  ; cmap(9:10,:) = 0
-
-  ; cmap(12:13,:) = 0
+  cmap  = read_colormap_file("precip_diff_12lev")
+  ; cmap  = cmap(::-1,:)
+  ; cmap(120:150,:) = 0
+  ; cmap(7,:) = 0
+  ; cmap(60:70,:) = 0
   ; ncmap = dimsizes(cmap(:,0))
 
   plot = new(n,graphic)                          ; create a plot array
@@ -95,6 +106,8 @@ n      = 8
   res@mpProvincialLineThicknessF  = 1.1
   res@mpGeophysicalLineThicknessF = 1.5
   res@mpPerimLineColor = "DarkGreen"
+  ; res@cnFillMode = "CellFill"
+
   ; res@g
 ;
 ; Force both plots to have the same contour levels. This is necessary
@@ -108,10 +121,15 @@ n      = 8
 
 
   res@cnLevelSelectionMode =  "ExplicitLevels"
+  res@cnFillOpacityF = 0.8
   ; res@cnMinLevelValF       =  minlv
   ; res@cnMaxLevelValF       =  maxlv
   ; res@cnLevelSpacingF      =  intlv
-  res@cnLevels = (/0.2, 0.33, 0.5, 0.65, 0.8, 0.9, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25,2.5/)
+  ; res@cnLevels = (/0.1, 0.2, 0.33, 0.5, 0.65, 0.8, 1.0,  1.25, 1.5, 2.0, 3.0, 3.5, 4.0/)
+  ; res@cnLevels = (/0.005,0.01,0.02, 0.025, 0.03, 0.035,0.04,0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.1,0.15,0.18,0.2/)
+  ; res@cnLevels = (/0.2,0.3,0.4, 0.5, 0.6, 0.7,0.8,0.9, 1.0, 1.1, 1.25,1.5, 1.8, 2.,2.5,2.8,3.0/)
+
+  res@cnLevels = (/0.2,0.3,0.4, 0.5, 0.6, 0.7,0.8, 1.0,1.25,1.4, 1.5, 1.6,1.7,1.8,2.0/)
   res@gsnAddCyclic         = False
   res@gsnLeftString        = ""
   res@gsnRightString        = ""
@@ -132,6 +150,7 @@ n      = 8
   res2@cnLinesOn           = False
   ; res2@cnFillIndex         = 6
   res2@cnFillPattern       = 6
+  res@cnMissingValFillColor = "white"
   ; res2@cnLevelSelectionMode =  "ManualLevels"
   ; res2@cnMinLevelValF       =  res@cnMinLevelValF
   ; res2@cnMaxLevelValF       =  res@cnMaxLevelValF
@@ -141,15 +160,21 @@ n      = 8
   ; res@cnMinLevelValF       =  minlv
   ; res@cnMaxLevelValF       =  maxlv
   ; res@cnLevelSpacingF      =  intlv
-  res2@cnLevels = (/0.2,0.3,0.4, 0.5, 0.6, 0.7,0.8, 0.9, 1.0, 1.2, 1.5,1.8, 2.0, 2.2,2.5,2.8,3.0/)
+  res2@gsnLeftString         = ""
+  ; res2@cnLevels = (/0.2,0.3,0.4, 0.5, 0.6, 0.7,0.8, 1.0,1.25,1.4, 1.5, 1.6,1.7,1.8,2.0/)
+  ; 2/10,3/10,4/10,5/10,6/10,7/10,8/10,9/10,1,
   res2@gsnAddCyclic         = False
-  res@cnFillPalette         = cmap
-  res2@cnInfoLabelOn        = False
-  res2@cnLineLabelsOn        = False
-  ; res2@cnFillColor          = "gray60"
-  res2@gsnLeftString        = ""
-  res2@gsnRightString        = ""
+  res2@cnFillPalette = False
+  res2@cnFillPattern        = 17
+  res2@cnFillScaleF         = 1.2
+  res2@cnMonoFillColor = True
+  res2@cnFillColorOn        = True
+  res2@cnFillColor          = "black"
+  res2@cnFillDotSizeF       = 0.003
+  res2@gsnRightString       = ""
+  res2@cnLineLabelsOn = False
 
+  res@cnFillMode = "RasterFill"
   res2@gsnContourNegLineDashPattern = 2
   res2@gsnContourZeroLineThicknessF = 2.5
 

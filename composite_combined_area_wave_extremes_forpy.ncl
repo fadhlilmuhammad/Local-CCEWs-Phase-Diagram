@@ -1,13 +1,14 @@
 
 
 load "diag_local_wave_phase.ncl"
+load "utils.ncl"
 
-regions = (/"TopEnd","CapeYork","Kimberley","Queensland"/)
-regioncode = (/"TE", "CY", "KY", "QL"/)
-latSs = (/-17, -16, -20, -25/)
-latNs = (/-10, -10, -13.5, -18/)
-lonLs = (/129, 142, 120, 140/)
-lonRs = (/137, 146, 128, 145/)
+regions = (/"TopEnd","CapeYork","Kimberley","Queensland","EastCoast"/)
+regioncode = (/"TE", "CY", "KY", "QL","EC"/)
+latSs = (/-17, -16, -20, -25, -23.5/)
+latNs = (/-11, -10, -13.5, -20, -16./)
+lonLs = (/129, 141, 120, 138, 146./)
+lonRs = (/137, 146, 128, 145, 151./)
 
 
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
@@ -15,7 +16,11 @@ diri_csv = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/local_wave_phase/co
 
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 
-fname = "agcd_v1_precip_calib_r025_daily_1981-2020.masked.nc"
+if regioncode(code).ne."EC" then
+fname = "agcd_v1_precip_calib_r025_daily_1981-2020.maskedshp.shift1day.nc"
+else
+fname = "agcd_eastcoast.shift1day.nc"
+end if
 
 fls   = systemfunc("ls "+diri_csv+"*_"+regioncode(code)+"_"+seas+".csv")
 
@@ -42,23 +47,43 @@ do n = code, code
 
 
   f     = addfile(diri+fname,"r")
-  pr_inn    = f->precip(:,{latSs(n):latNs(n)}, {lonLs(n):lonRs(n)})
-  pr_in     = where(pr_inn.eq.-127, pr_inn@_FillValue, pr_inn)
 
-  copy_VarMeta(pr_inn,pr_in)
+  time = f->time
+  dates = cd_calendar(time, -2)
 
-  lat    = pr_in&lat
+  istrt = ind(dates.eq.19810101)
+  ilast = ind(dates.eq.20181231)
+  delete(time)
+
+  pr_inn    = f->precip(istrt:ilast,{latSs(n):latNs(n)}, {lonLs(n):lonRs(n)})
+  ; pr_in     = where(pr_inn.eq.-127, pr_inn@_FillValue, pr_inn)
+  ; pr_in     = where(pr_inn.le.1, pr_inn@_FillValue, pr_inn)
+
+  ; copy_VarMeta(pr_inn,pr_in)
+
+  lat    = pr_inn&lat
   rad    = 4.0*atan(1.0)/180.0
   clat   = cos(lat*rad)
 
-  pr_aave     = wgt_areaave_Wrap(pr_in, clat, 1.0, 0)
+  pr_aave_in  = wgt_areaave_Wrap(pr_inn, clat, 1.0, 0)
+  ; pr_aave_stat = wgt_areaave_Wrap(pr_in, clat, 1.0, 0)
+
+  ; pr_aave = pr_aave_in
+  pr_aave     = where(pr_aave_in.le.1., pr_aave_in@_FillValue, pr_aave_in )
+
+  copy_VarMeta(pr_aave_in, pr_aave)
+  pr_aave_stat = pr_aave
+  printVarSummary(pr_aave_in)
 
   if seas.eq."mam" then
     season = "SHAutumn"
   else if seas.eq."djf" then
     season = "SHSummer"
   end if
-end if
+  end if
+
+
+
   printVarSummary(pr_aave)
   ;calculate daily anomaly
 
@@ -78,15 +103,22 @@ end if
   DATE    = cd_calendar(time(iseason), -2)
   ;calc anom
 
-  perc = 95
-  pr_stat   = stat_dispersion(pr_aave(iseason), False)
+  perc = 90
+  check = pr_aave_in(iseason)
+  print(check)
+  pr_stat   = percent_to_value(pr_aave_stat(iseason), perc)
   print(pr_stat)
-  pr_freq   = where(pr_aave(iseason).ge.pr_stat(25), 1., 0. )
-  copy_VarMeta(pr_aave(iseason),pr_freq)
+  pr_freq_all   = where(pr_aave_in.ge.pr_stat, 1., 0. )
 
+  copy_VarMeta(pr_aave,pr_freq_all)
+  pr_freq = pr_freq_all(iseason)
+
+  pr_aave_seas = pr_aave_in(iseason)
+  print(pr_freq)
 
   ndim  = dimsizes(pr_freq)
   printVarSummary(flsname)
+
   comp = new((/dimsizes(fls)/), "float", pr_aave@_FillValue)
   comp@ndays = new(dimsizes(fls),integer)
   comp@desc = new(dimsizes(fls),string)
@@ -107,7 +139,13 @@ end if
       idate(t) = ind(fcsv(t).eq.DATE2)
     end do
 
+    print(pr_aave_seas(idate))
+    print("prec aave seas")
+    print(pr_aave_seas(idate))
+    print(idate)
+    printVarSummary(pr_freq)
     pr_sel = pr_freq(idate)
+    ; print(pr_sel)
 
     comp_med(i) = dim_median_n(pr_sel,0)
     comp(i) = dim_avg_n(pr_sel,0)
@@ -140,9 +178,15 @@ end if
     alpha@ndays(i) = dimsizes(idate)
     comp@desc(i) = flsname(i)
 
-    comp(i) = comp(i)/dim_avg_n(pr_freq,0)
+
+    probs = comp(i)/dim_avg_n(pr_freq,0)
+    delete(comp(i))
+    comp(i) = probs
+    delete(probs)
 
 
+      print("probrel: "+flsname(i)+" "+comp(i))
+      print(fls(i))
     ; system("rm "+diro+"combined_"+flsname(i)+".nc")
     ; fout = addfile(diro+"combined_"+flsname(i)+".nc", "c")
     ; fout->composite = dim_avg_n_Wrap(pr_Anom_sel,0)
@@ -177,7 +221,7 @@ end if
   delete(comp)
   delete(alpha)
   delete(lat)
-  delete(pr_in)
+  ; delete(pr_in)
   delete(pr_aave)
   delete(pr_inn)
   delete(flsname)

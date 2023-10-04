@@ -4,7 +4,7 @@ load "wkSpaceTime_mod.ncl"
 
 
 
-mode = "NH"
+mode = "SH"
 lat  = 25
 SEAS = "SHSummer"
 diri  = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/STSA/"
@@ -94,7 +94,7 @@ genDispersionCurves(nWaveType, nEquivDepth, nPlanetaryWave, rlat, Ahe, Afreq, Ap
 ; dispersion curve and text plot resources
 ;---------------------------------------------------------------
 dcres = True
-dcres@gsLineThicknessF  = 2.0
+dcres@gsLineThicknessF  = 1.3
 dcres@gsLineDashPattern = 0
 
 txres = True
@@ -157,7 +157,7 @@ print(period)
 ; res@tmYLValues        = period
 ; res@tmYLLabels        = period
 
-pltType = "png"
+pltType = "pdf"
 wks  = gsn_open_wks(pltType,wkdir+"/Fig3.FR04.symAsym."+lat+"_"+nseas+"season."+mode)
 gsn_define_colormap(wks,pltColorMap)
 
@@ -180,7 +180,7 @@ res@gsnCenterStringFontHeightF = 0.018
 res@gsnCenterString = "OLR:"+modename+" (" +seasmon(i)+")"
 
 if mode.eq."SH" then
-  if seasname(i).ne."SHWinter" then
+  if seasname(i).ne."SHWinterss" then
     res@cnLevels = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8,1.9,2.0/)
   else
     res@cnLevels = (/0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9,1.0/)
@@ -224,7 +224,7 @@ dum(j+11) = gsn_add_polyline(wks,plot(i),(/-15,-6/), (/ftd2,ftd2/),tdres)
 
 
 tdres@gsLineColor = "darkgreen"
-tdres@gsLineThicknessF = 5.0
+tdres@gsLineThicknessF = 1.3
 ;ER
 ; gsn_add_polyline(wks,plot(i),Apzwn(3,0,:),Afreq(3,0,:),tdres)
 ; gsn_add_polyline(wks,plot(i),Apzwn(3,2,:),Afreq(3,2,:),tdres)

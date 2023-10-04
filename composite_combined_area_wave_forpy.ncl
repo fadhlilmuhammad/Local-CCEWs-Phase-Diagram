@@ -2,12 +2,12 @@
 
 load "diag_local_wave_phase.ncl"
 
-regions = (/"TopEnd","CapeYork","Kimberley","Queensland"/)
-regioncode = (/"TE", "CY", "KY", "QL"/)
-latSs = (/-17, -16, -20, -25/)
-latNs = (/-10, -10, -13.5, -18/)
-lonLs = (/129, 142, 120, 140/)
-lonRs = (/137, 146, 128, 145/)
+regions = (/"TopEnd","CapeYork","Kimberley","Queensland","EastCoast"/)
+regioncode = (/"TE", "CY", "KY", "QL","EC"/)
+latSs = (/-17, -16, -20, -25, -23.5/)
+latNs = (/-11, -10, -13.5, -20, -16./)
+lonLs = (/129, 142, 120, 138, 146./)
+lonRs = (/137, 146, 128, 145, 151./)
 
 
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
@@ -15,7 +15,11 @@ diri_csv = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/local_wave_phase/co
 
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
 
-fname = "agcd_v1_precip_calib_r025_daily_1981-2020.masked.nc"
+if regioncode(code).ne."EC" then
+fname = "agcd_v1_precip_calib_r025_daily_1981-2020.maskedshp.shift1day.nc"
+else
+fname = "agcd_eastcoast.shift1day.nc"
+end if
 
 do n = code, code
 

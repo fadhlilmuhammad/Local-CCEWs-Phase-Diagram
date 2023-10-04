@@ -1,9 +1,9 @@
 ; waves  = "kelvin"
-latS = -25
-latN = 25
+latS = -20
+latN = 20
 
-seas = "SHAutumn"
-type = "rawolr"
+seas = "SHWinter"
+type = "anom"
 folder = "data/"
 ; fname = "eof.olr."+waves+".n40.nc"
 fname = "eof.olr."+type+"."+seas+".nc"

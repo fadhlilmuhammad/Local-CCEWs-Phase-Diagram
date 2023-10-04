@@ -95,6 +95,102 @@ end if
   return(xmask)
 end
 
+
+
+undef ( "percent_to_value" )
+function percent_to_value( \
+  i_data           : numeric, \
+  i_percentiles[*] : numeric  \
+)
+local None
+begin
+
+  ; print("check1")
+  retVal = new( dimsizes(i_percentiles), float )
+  ; print(retVal)
+  data1d = ndtooned( i_data )
+
+if(all(ismissing(data1d))) then
+    ; print("ALL MISSING data...")
+    return(data1d@_FillValue)
+else
+    ; print("check2")
+  notMissing = data1d( ind(.not.ismissing(data1d) ) )
+  ; print(notMissing)
+
+  qsort(notMissing)
+
+  do p = 0, dimsizes(i_percentiles)-1
+    ; print(data1d)
+;   pInd = round( i_percentiles(p) * .01 * dimsizes(notMissing) + 0.5, 3 ) -1
+;   pInd = where( pInd.ge.dimsizes(notMissing), dimsizes(notMissing)-1, pInd )
+    floatInd = i_percentiles(p) * .01 * dimsizes(notMissing) - 0.5
+    floorInd = toint( floor(floatInd) )
+    floorInd = where( floorInd.lt.0, 0, floorInd )
+    ceilInd = toint( ceil(floatInd) )
+    ceilInd = where( ceilInd.ge.dimsizes(notMissing), \
+        dimsizes(notMissing)-1, ceilInd )
+;   print(pInd + " " + dimsizes(notMissing))
+    if( ceilInd.eq.floorInd ) then
+      retVal(p) = notMissing(floorInd)
+    else
+      retVal(p) = notMissing(floorInd) * ( ceilInd - floatInd ) \
+          + notMissing(ceilInd) * ( floatInd - floorInd )
+    end if
+  end do
+
+  return(retVal)
+end if
+end ; percent_to_value
+
+
+undef("percentile")
+function percentile(x:numeric,P:float)
+begin
+if(P.gt.0) then
+P = P/100.
+end if
+  nall = x
+  igood = ind(.not.ismissing(nall))
+  nx = nall(igood)
+  ; print(xgood)
+  ; printVarSummary(nx)
+
+  ; print(nx)
+  index = round(P*dimsizes(nx),3)
+  print(index)
+  print("Index of percentile: "+index+ " of size: "+dimsizes(nx))
+  ib = dim_pqsort(nx,2)
+
+  ; print(ib)
+  ; print("The "+P*100+" percentile: "+nx(index))
+  return(nx(index-1))
+end
+
+
+undef ( "percent_to_value_2d" )
+function percent_to_value_2d( \
+  i_data[*][*][*]  : numeric, \
+  i_percentile[1]  : numeric  \
+)
+local None
+begin
+
+  dims = dimsizes(i_data)
+  sorted = i_data
+  ip = dim_pqsort_n( sorted, 2, 0 )
+
+  pInd = round( i_percentile * .01 * dims(0) + 0.5, 3 ) -1
+  pInd = where( pInd.ge.dims(0), dims(0)-1, pInd )
+  retVal = sorted(pInd,:,:)
+  copy_VarAtts( i_data, retVal )
+  copy_VarCoords( i_data(0,:,:), retVal )
+
+  return(retVal)
+end ; percent_to_value_2d
+
+
+
 ;;;;;CHOOSING SEASON
 
 undef("choose_season")

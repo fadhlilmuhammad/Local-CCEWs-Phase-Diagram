@@ -1,19 +1,19 @@
 load "diag_local_wave_phase.ncl"
 
 ; load('$NCARG_ROOT/lib/ncarg/database/rangs')
-diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/dynamics/"
+diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/dynamics/gadi/"
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/dynamics/"
 
-waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
+waves  = (/"er","mrg", "td", "mjo","kelvin", "td-slow"/)
 ; thresh = 1
-minlv = -10.
-maxlv = 10.
-intlv = 1.
+minlv = -2.
+maxlv = 2.
+intlv = .1
 scale = 86400./1000.
 
 seas = "SHSummer"
 
-type = "makeown.anom30"
+type = "makeownsl.dailyanom"
 ; remaptype =  "regrid"
 
 do k =0, dimsizes(waves)-1
@@ -91,7 +91,7 @@ n      = 8
 
   res@mpFillOn            = False
   res@mpMaxLatF           = -5
-  res@mpMinLatF           = -30
+  res@mpMinLatF           = -25
 
   res@mpMaxLonF           = 170
   res@mpMinLonF           = 90

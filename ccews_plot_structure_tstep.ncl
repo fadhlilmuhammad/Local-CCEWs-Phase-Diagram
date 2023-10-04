@@ -21,7 +21,7 @@ folderout = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/theory/"
 
 dtim = 16
 do t = 0, dtim-1
- wks   = gsn_open_wks ("png", folderout+"wave_structure_panel_"+t)        ; send graphics to PNG file
+ wks   = gsn_open_wks ("eps", folderout+"wave_structure_panel_"+t)        ; send graphics to PNG file
  plot  = new(5,graphic)
 
  res                 = True                    ; plot mods desired

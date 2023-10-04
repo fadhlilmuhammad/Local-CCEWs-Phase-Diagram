@@ -15,18 +15,20 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 ;   wgt   = filwgts_lanczos (nWgt, ihp, fca, fcb, sigma )
 
 
-waves = (/ "er","kelvin", "mrg", "td", "mjo", "td-slow"/)
+waves = (/ "er", "mrg", "td", "mjo","kelvin", "td-slow"/)
 ; waves = (/"er"/)
-
-remaptype = "regrid"
+sigval = 90
+season   = "SHAutumn"
+perc = 90
+remaptype = "shift1day"
 
 startwave = 0
 do k = startwave, dimsizes(waves)-1
 wave = waves(k)
 ; foutname = "rr_sacad_clean_AU.nc"
-foutname = "agcd_v1_precip_calib_r005_daily_1981-2020."+remaptype+".nc"
+foutname = "agcd_v1_precip_calib_r025_daily_1981-2020.maskedshp.shift1day.nc"
+; foutname = "agcd_v1_precip_calib_r025_daily_1981-2020.maskedshp.nc"
 
-perc = 95
 var = "precip"
 ; var = "rr"
 
@@ -35,13 +37,22 @@ ylast    = 2018
 
 ref = 133
 wave     = waves(k)
-season   = "SHSummer"
 f        = addfile(diri+foutname, "r")
 g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".noTC.nc", "r")
 
+if season.eq."SHSummer" then
+  seasmon = "djf"
+else if season.eq."SHAutumn" then
+  seasmon = "mam"
+end if
+end if
+
+fth = addfile(diri+"agcd_"+seasmon+"_"+perc+".nc", "r")
+xth = fth->precip(0,:,:)
+
 
 ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
-print(ftc)
+; print(ftc)
 
 amp_in   = g->amp
 printVarSummary(amp_in)
@@ -54,7 +65,7 @@ ilast    = ind(time(:,0).eq.ylast)
 
 ;selecting amplitude and phase
 amp      = amp_in(istrt(0):ilast(dimsizes(ilast)-1))
-delete(amp@phase)
+; delete(amp@phase)
 amp@phase = amp_in@phase(istrt(0):ilast(dimsizes(ilast)-1))
 delete(time)
 
@@ -77,7 +88,7 @@ DATE = cd_calendar(TIME, 0)
 istrt   = ind(DATE(:,0).eq.ystrt)
 ilast   = ind(DATE(:,0).eq.ylast)
 
-print(istrt)
+; print(istrt)
 
 time        = TIME(istrt(0):ilast(dimsizes(ilast)-1))
 ymdhms      = cd_calendar(time, 0)
@@ -95,20 +106,52 @@ do i = 0, dimsizes(yyyymmdd)-1
   indchoose(i) = ind(yyyymmdd_x.eq.yyyymmdd(i)); write loop content
 end do
 
+; print(x_in)
+; x_in_th = where(x_in.gt.1., x_in, x_in@_FillValue)
+; copy_VarMeta(x_in,x_in_th)
+;
+
+; ndim = dimsizes(x_in_th(indchoose,:,:))
+; nx   = ndim(2)
+; ny   = ndim(1)
 
 
-x_stat_inn   = percent_to_value_2d(x_in(indchoose,:,:), perc)
-; x_stat_in    = where(x_stat_inn.lt.1, 1.0, x_stat_inn)
-x_stat_in = x_stat_inn
+; x_stat_inn = new((/ny, nx/), "float")
+; printVarSummary(x_stat_inn)
+;
+; do i=0, nx-1
+;   do j=0, ny-1
+;     ; check = x_in_th(indchoose,j,i)
+;     print("nx="+i)
+;     print("ny="+j)
+;
+;   th1d = x_in_th(indchoose,j,i)
+;   print(th1d)
+;   printVarSummary(th1d)
+;   x_stat_inn(i,j)   = percent_to_value(th1d, perc)
+;   end do
+; end do
 
-copy_VarMeta(x_stat_inn,x_stat_in)
-printVarSummary(x_stat_in)
+x_in = x_raw
+; copy_VarCoords(x_in(0,:,:), x_stat_inn)
+; copy_VarAtts(x_in, x_stat_inn)
+; x_stat_in    = where(x_stat_inn.lt.1, x_stat_inn@_FillValue, x_stat_inn)
+x_stat_inn = xth
+; xth = x_stat_inn
+; print(xth)
+
+; copy_VarMeta(x_stat_inn,x_stat_in)
+; printVarSummary(x_stat_in)
 xseas       = x_in(indchoose,:,:)
-print(cd_calendar(xseas&time,-2))
+; xseas_stat  = where(xseas.gt.1, xseas, xseas@_FillValue)
+
+; copy_VarMeta(xseas,xseas_stat)
+; print(cd_calendar(xseas&time,-2))
 printVarSummary(xseas)
 
-x_stat      = conform_dims(dimsizes(xseas), x_stat_in, (/1,2/))
+x_stat      = conform_dims(dimsizes(xseas), xth, (/1,2/))
 
+; x_stat = xth
 x_freq      = where(xseas.ge.x_stat, 1., 0.) ;* 100.
 copy_VarCoords(xseas,x_freq)
 nlat        = dimsizes(xseas&lat)
@@ -126,7 +169,7 @@ comp = composite_waves(x_freq,phase, amp, season)
 ; print(phase_seas)
 x_seas      = dim_avg_n_Wrap(x_freq(:,:,:),0)
 
-
+; print(x_seas)
 do i = 0, 7
   print("phase-"+(i+1))
   nphase  = i+1
@@ -134,15 +177,15 @@ do i = 0, 7
   ; indactive         = lookup_phase_index_rmvtc(phase_seas,amp, date_phase, nphase,ftc )
   indactive         = lookup_phase_index(phase_seas,amp, date_phase, nphase )
   printVarSummary(indactive)
-  print(indactive)
   ; print(indactive)
-  print(num(.not.ismissing(indactive)))
+  ; print(indactive)
+  ; print(num(.not.ismissing(indactive)))
   ; comp@ndays(i+1)   = num(indactive)
   xphase            = x_freq(indactive,:,:)
 
   ; pall     =
-  nBoot = 100
-  sigval = 95
+  nBoot = 1000
+
   optboot   = True
   optboot@sample_method = 1
   optboot@sample_size = dimsizes(indactive)
@@ -152,9 +195,9 @@ do i = 0, 7
   xBoot      = BootStrap[0]
 
   siglow      = (100. - sigval)/200.
-  print(siglow)
+  ; print(siglow)
   sighi       = (1. - siglow)
-  print(sighi)
+  ; print(sighi)
 
   xBootLow   = bootstrap_estimate(xBoot, siglow, False)   ;  2.5% lower confidence bound
   xBootHi    = bootstrap_estimate(xBoot, sighi, False)   ; 97.5% upper confidence bound
@@ -199,7 +242,7 @@ printVarSummary(amp)
 
 
 pall = conform_dims(dimsizes(comp), x_seas, (/1,2/))
-; pall = where(pall.eq.0, 1., pall)
+pall = where(pall.eq.0, pall@_FillValue, pall)
 copy_VarAtts(comp, pall)
 printVarSummary(comp)
 
@@ -234,11 +277,11 @@ fout->alpha = alpha
 foutseas = wave+"_"+season+"_perc"+perc+"_025_sig"+sigval+".nc"
 system("rm "+diro+"precip/"+foutseas)
 
-fout2 = addfile(diro+"precip/"+foutseas,"c")
-fout2->seas = dim_avg_n_Wrap(x_freq,0)
-; fout2->seas_med = dim_median_n(xseas,0)
-fout2->seas_th = x_stat_in
-fout2->seas_avg = dim_avg_n_Wrap(x_in(indchoose,:,:), 0)
+; fout2 = addfile(diro+"precip/"+foutseas,"c")
+; fout2->seas = dim_avg_n_Wrap(x_freq,0)
+; ; fout2->seas_med = dim_median_n(xseas,0)
+; fout2->seas_th = xth
+; fout2->seas_avg = dim_avg_n_Wrap(x_in(indchoose,:,:), 0)
 
 delete(time)
 delete(istrt)

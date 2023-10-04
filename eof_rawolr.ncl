@@ -1,12 +1,12 @@
 load "utils.ncl"
 ; waves = "kelvin"
-folder = "data/"
-type = "rawolr"
+folder = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+type = "anom"
 ; fname = "olr."+waves+"."+type+".nc"
 ; fname = "olr."+waves+".1979-2021.nc"
-fname = "olr.day.anomalies.1979-2021.nc"
+fname = "olr.day.anomalies.1980-2019.nc"
 
-seas  = "SHAutumn"
+seas  = "SHSummer"
 
 
 ;TRY EOFS with raw data
@@ -17,7 +17,7 @@ seas  = "SHAutumn"
 ystrt = 19810101
 ylast = 20181231
 
-neof = 200
+neof = 20
 f = addfile(folder+fname,"r")
 
 time = f->time
@@ -26,7 +26,7 @@ date = cd_calendar(time, -2)
 iStrt = ind(date.eq.ystrt)
 iLast = ind(date.eq.ylast)
 
-x_in = f->OLR_anom_sm(iStrt:iLast,{-25:25},:)
+x_in = f->olr_anom_sm(iStrt:iLast,{-20:20},:)
 
 ymdhms = cd_calendar(x_in&time, 0)
 iseason = choose_season(seas, ymdhms)

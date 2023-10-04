@@ -3,11 +3,11 @@
 load "diag_local_wave_phase.ncl"
 
 diro     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/"
-diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
+diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/olr_filtered/"
 
 ; fname    = "VIMFC_ERA5_1980-2018.nc"
 
-waves = (/ "er","kelvin", "mrg", "td", "mjo"/)
+waves = (/ "er", "mrg", "td", "mjo","kelvin"/)
 
 ystrt = 1981
 ylast = 2018
@@ -18,11 +18,12 @@ do k = startwave, dimsizes(waves)-1
 
   ref = 133
   wave     = waves(k)
-  season   = "SHSummer"
-  g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".nc", "r")
-  ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
+  season   = "SHAutumn"
+  g        = addfile(diro+"/local_wave_phase/local_"+wave+"_phase_"+season+"."+ref+".noTC.nc", "r")
+  ; ftc      = asciiread(diri+"TC_dates.csv", -1, "integer")
 
-  fname = "mvimd."+wave+".25.nc"
+  varin = "u850"
+  fname = varin+"."+wave+".25.nc"
   f        = addfile(diri+fname, "r")
 
   type = "filtered"
@@ -94,7 +95,7 @@ do k = startwave, dimsizes(waves)-1
     print("phase-"+(i+1))
     nphase  = i+1
     date_phase        = cd_calendar(vimfc_seaschoose&time, -2)
-    indactive         = lookup_phase_index_rmvtc(phase_seas,amp, date_phase, nphase,ftc )
+    indactive         = lookup_phase_index(phase_seas,amp, date_phase, nphase)
     printVarSummary(indactive)
     ; print(num(indactive))
     xphase            = vimfc_seaschoose(indactive,:,:)
@@ -139,9 +140,14 @@ do k = startwave, dimsizes(waves)-1
   ; copy_VarCoords(xseas, vimfc_seas)
   printVarSummary(vimfc_seas)
 
-  copy_VarCoords(vimfc, alpha)
 
-  foutname = wave+"_wave_composite_"+season+"_vimfc_sig"+sigval+".ref"+ref+".fromera."+type+".nc"
+  do t = 0, 8
+    copy_VarCoords(vimfc(0,:,:), alpha(t,:,:))
+; write loop content
+  end do
+
+
+  foutname = wave+"_wave_composite_"+season+"_"+varin+"_sig"+sigval+".ref"+ref+".fromera."+type+".nc"
   ; foutname = wave+"_wave_composite_"+season+"_perc"+perc+".nc"
   system("rm "+diro+"dynamics/"+foutname)
 

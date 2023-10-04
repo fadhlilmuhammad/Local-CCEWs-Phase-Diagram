@@ -132,7 +132,7 @@ do t = 0, dtim-1
 ; ===========================
 ; create plot
 ; ===========================
- wks   = gsn_open_wks ("png", "wave_structure_"+t)        ; send graphics to PNG file
+ wks   = gsn_open_wks ("eps", "/Users/fadhlilrizki/Documents/PhD/thesis/figures/theory/"+"wave_structure_"+t)        ; send graphics to PNG file
 
  res                 = True                    ; plot mods desired
 

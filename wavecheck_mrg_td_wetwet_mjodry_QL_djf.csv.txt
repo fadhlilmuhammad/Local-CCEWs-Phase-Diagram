@@ -1,0 +1,94 @@
+ Copyright (C) 1995-2019 - All Rights Reserved
+ University Corporation for Atmospheric Research
+ NCAR Command Language Version 6.6.2
+ The use of this software is governed by a License Agreement.
+ See http://www.ncl.ucar.edu/ for more details.
+fatal:syntax error: line 26 in file combined_rain_check.ncl before or near x 
+  seas = "SHAutumn"x
+-------------------^
+
+fatal:Syntax Error in block, block not executed
+fatal:error at line 28 in file combined_rain_check.ncl
+
+
+
+Variable: csv
+Type: integer
+Total Size: 24 bytes
+            6 values
+Number of Dimensions: 1
+Dimensions and sizes:	[6]
+Coordinates: 
+Number Of Attributes: 1
+  _FillValue :	-2147483647
+(0)	19890211
+(1)	20000131
+(2)	20040212
+(3)	20081209
+(4)	20090208
+(5)	20110212
+(0)	short2flt: input variable is already type float: Daily precipitation
+(0)	short2flt: no conversion performed
+fatal:Variable (iseason) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 207 in file utils.ncl
+
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 55 in file combined_rain_check.ncl
+
+fatal:Variable (iseason) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 57 in file combined_rain_check.ncl
+
+fatal:Variable (th) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 58 in file combined_rain_check.ncl
+
+fatal:Variable (th) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 60 in file combined_rain_check.ncl
+
+fatal:Variable (prcp) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 61 in file combined_rain_check.ncl
+
+fatal:Undefined identifier: (prcp) is undefined, can't continue
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 64 in file combined_rain_check.ncl
+
+fatal:Variable (iseason) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 73 in file combined_rain_check.ncl
+
+fatal:Variable (th_1D) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 76 in file combined_rain_check.ncl
+
+fatal:Variable (prcp_aave_ext) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 77 in file combined_rain_check.ncl
+
+fatal:Variable (prcp_aave_ext) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 78 in file combined_rain_check.ncl
+
+fatal:Undefined identifier: (prcp_aave_ext) is undefined, can't continue
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 80 in file combined_rain_check.ncl
+
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 85 in file combined_rain_check.ncl
+
+fatal:Variable (time) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 86 in file combined_rain_check.ncl
+
+fatal:Variable (date) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 90 in file combined_rain_check.ncl
+
+fatal:Undefined identifier: (prcp) is undefined, can't continue
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 95 in file combined_rain_check.ncl
+
+fatal:Undefined identifier: (prcp_aave_ext) is undefined, can't continue
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 97 in file combined_rain_check.ncl
+
+fatal:Variable (prcp_aave_seas) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 98 in file combined_rain_check.ncl
+
+(0)	number of events: 6
+fatal:Undefined identifier: (prcp_aave_ext) is undefined, can't continue
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 100 in file combined_rain_check.ncl
+
+fatal:Variable (comp_2D) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 105 in file combined_rain_check.ncl
+
+fatal:Variable (comp) is undefined
+fatal:["Execute.c":8637]:Execute: Error occurred at or near line 107 in file combined_rain_check.ncl
+
+

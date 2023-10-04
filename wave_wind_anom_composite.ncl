@@ -8,11 +8,12 @@ diri     = "/Users/fadhlilrizki/Documents/PhD/thesis/data/"
 ; fname    = "VIMFC_ERA5_MAKEOWN_1980-2019.nc"
 ; fname = "mvimd.day.anomalies.1980-2019.nc"
 
-; type = "dailyanom"
-type = "seasanom"
+type = "dailyanom"
+; type = "seasanom"
 ; var = "mvimd_anom"
-var = "v"
-varout = "v850"
+var = "u"
+plev = 850
+varout = var+plev
 data = "fromera"
 
 season = "SHSummer"
@@ -23,13 +24,13 @@ ystrt = 1981
 ylast = 2018
 
 ; fname = var+"_"+season+"."+ystrt+"-"+ylast+"."+data+"."+type+".nc"
-fname = diri + "v_era5_daily.nc"
+fname = diri + var+"_era5_daily.nc"
 startwave = 0
 
 
 ; f        = addfile(diro+"dynamics/"+fname, "r")
 f = addfile(fname,"r")
-vimfc    = f->$var$(:,{850},:,:)
+vimfc    = f->$var$(:,{plev},:,:)
 
 
 ;***********************************************************

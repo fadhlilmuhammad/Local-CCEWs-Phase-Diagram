@@ -3,19 +3,20 @@
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/precip/"
 diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/precip/"
 
-waves  = (/"er", "kelvin",  "td","mjo","mrg","td-slow"/)
+waves  = (/"er", "kelvin",  "td","mrg","mjo","td-slow"/)
 ; thresh = 1
 minlv = -5.
 maxlv = 5.
 intlv = 0.5
 
-remaptype =  "025_dailyanom"
+; remaptype =  "025_dailyanom"
+remaptype =  "shift1day.dailyanom"
 
 do k =0, dimsizes(waves)-1
   ; write loop content
 
 wave = waves(k)
-seas = "SHSummer"
+seas = "SHAutumn"
 ref = 133
 
 if seas.eq."SHSummer" then
@@ -48,12 +49,12 @@ n      = 8
 ;************************************************
 ; create plots
 ;************************************************
-  wks = gsn_open_wks("png",diro+"rain_anom_comp_"+wave+"_"+seas+"ref"+ref+"_"+remaptype)              ; send graphics to PNG file
+  wks = gsn_open_wks("pdf",diro+"rain_anom_comp_"+wave+"_"+seas+"ref"+ref+"_"+remaptype)              ; send graphics to PNG file
 
-  cmap  = read_colormap_file("precip4_diff_19lev")
-  cmap(9:10,:) = 0
+  cmap  = read_colormap_file("MPL_RdBu")
+  ; cmap(9:10,:) = 0
 
-  ; cmap(12:13,:) = 0
+  cmap(60:70,:) = 0
   ; ncmap = dimsizes(cmap(:,0))
 
   plot = new(n,graphic)                          ; create a plot array
@@ -105,6 +106,7 @@ n      = 8
   res@cnLevelSpacingF      =  intlv
   res@gsnAddCyclic         = False
   res@gsnLeftString        = ""
+  res@cnFillMode = "RasterFill"
   res@gsnRightString        = ""
 
   plotsort = (/0,2,4,6,1,3,5,7/)
@@ -128,10 +130,18 @@ n      = 8
   res2@cnMaxLevelValF       =  res@cnMaxLevelValF
   res2@cnLevelSpacingF      =  res@cnLevelSpacingF
   res2@gsnAddCyclic         = False
-  res@cnFillPalette         = cmap
+  res2@cnFillPalette         = False
   res2@cnInfoLabelOn        = False
   res2@cnLineLabelsOn        = False
-  ; res2@cnFillColor          = "gray60"
+  res2@cnFillPattern        = 17
+  res2@cnFillScaleF         = 1.0
+  res2@cnFillColorOn          = True
+  res2@cnFillColor          = "gray60"
+  res2@cnFillDotSizeF = 0.003
+  res2@cnMonoFillColor = True
+  ; res2@cnFillMode = "RasterFill"
+  ; res2@cnFillMode           = ""
+  res2@cnFillColor          = "gray60"
   res2@gsnLeftString        = ""
   res2@gsnRightString        = ""
 

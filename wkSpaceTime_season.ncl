@@ -111,9 +111,10 @@ load "wkSpaceTime_mod.ncl"
 
   printVarSummary(spec)
 
-  opt@Fig_3a = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 /)
-  opt@Fig_3b = (/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8/)
-  opt@Fig_3c = (/2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8,2.9,3.0/)
+  opt@Fig_3a = log10(/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 /)
+  opt@Fig_3b = log10(/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8/)
+  opt@Fig_3c = log10(/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8/)
+  opt@Fig_3d = log10(/1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8/)
 
   opt@pltColorMap = "WhBlGrYeRe"
   opt@pltTitle   = "OLR: "+seas+" "+latN+"N-"+latN+"S"

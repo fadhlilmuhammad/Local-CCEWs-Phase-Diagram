@@ -4,7 +4,7 @@ load "diag_local_wave_phase.ncl"
 diri = "/Users/fadhlilrizki/Documents/PhD/thesis/dataout/olr_filtered/"
 ; diro = "/Users/fadhlilrizki/Documents/PhD/thesis/figures/olr_filtered/"
 
-wave = "td"
+wave = "mrg"
 f = addfile(diri + "olr."+wave+".25.nc", "r")
 
 x = f->$wave$
@@ -14,7 +14,7 @@ if wave.eq."kelvin" then
   latS = -15
   latN = -10
 else
-  latS = -20
+  latS = -25
   latN = -10
 end if
 
@@ -70,10 +70,10 @@ fout2->djf = latvariance_djf
 fout2->son = latvariance_son
 fout2->jja = latvariance_jja
 
-lonvariance_mam = dim_variance_n_Wrap(variance_mam(:,{113.4:153.5}), 0)
-lonvariance_djf = dim_variance_n_Wrap(variance_djf(:,{113.4:153.5}), 0)
-lonvariance_son = dim_variance_n_Wrap(variance_son(:,{113.4:153.5}), 0)
-lonvariance_jja = dim_variance_n_Wrap(variance_jja(:,{113.4:153.5}), 0)
+lonvariance_mam = dim_variance_n_Wrap(variance_mam(:,{113:153.5}), 0)
+lonvariance_djf = dim_variance_n_Wrap(variance_djf(:,{113:153.5}), 0)
+lonvariance_son = dim_variance_n_Wrap(variance_son(:,{113:153.5}), 0)
+lonvariance_jja = dim_variance_n_Wrap(variance_jja(:,{113:153.5}), 0)
 
 system("rm "+diri + "lonvariance.olr."+wave+".25.nc")
 fout3 = addfile(diri + "lonvariance.olr."+wave+".25.nc", "c")
